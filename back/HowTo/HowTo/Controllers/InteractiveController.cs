@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HowTo.Controllers;
 
+[FakeAuthorizationRequired]
 public class InteractiveController : Controller
 {
     private readonly InteractiveManager _interactiveManager;

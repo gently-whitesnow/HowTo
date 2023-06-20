@@ -31,6 +31,27 @@ public class InteractiveManager
         _articleRepository = articleRepository;
     }
 
+    public async Task<OperationResult<InteractiveResponse>> GetInteractiveAsync(
+        int courseId,
+        int articleId,
+        User user)
+    {
+        var articleOperation = await _articleRepository.GetArticleByIdAsync(courseId, articleId);
+        if (!articleOperation.Success)
+            return new(articleOperation);
+        var isAuthor = articleOperation.Value.Author.UserId == user.Id;
+        var interactiveOperation = await _interactiveRepository.GetInteractiveAsync(
+            courseId, articleId, isAuthor);
+        if (!interactiveOperation.Success)
+            return new(interactiveOperation);
+        
+        var lastInteractiveOperation = await _interactiveRepository.GetLastInteractiveAsync(courseId, articleId, user);
+        if (!lastInteractiveOperation.Success)
+            return new(lastInteractiveOperation);
+        
+        return new(new InteractiveResponse(interactiveOperation.Value, lastInteractiveOperation.Value));
+    }
+    
     public async Task<OperationResult<InteractiveByIdPublic>> UpsertInteractiveAsync(UpsertInteractiveRequest request)
     {
         var articleOperation = await _articleRepository.GetArticleByIdAsync(request.CourseId, request.ArticleId);
@@ -215,28 +236,6 @@ public class InteractiveManager
             _ => new (new ArgumentException("Invalid interactive type."))
         };
     }
-    
-    public async Task<OperationResult<InteractiveResponse>> GetInteractiveAsync(
-        int courseId,
-        int articleId,
-        User user)
-    {
-        var articleOperation = await _articleRepository.GetArticleByIdAsync(courseId, articleId);
-        if (!articleOperation.Success)
-            return new(articleOperation);
-        var isAuthor = articleOperation.Value.Author.UserId == user.Id;
-        var interactiveOperation = await _interactiveRepository.GetInteractiveAsync(
-            courseId, articleId, isAuthor);
-        if (!interactiveOperation.Success)
-            return new(interactiveOperation);
-        
-        var lastInteractiveOperation = await _interactiveRepository.GetLastInteractiveAsync(courseId, articleId, user);
-        if (!lastInteractiveOperation.Success)
-            return new(lastInteractiveOperation);
-        
-        return new(new InteractiveResponse(interactiveOperation.Value, lastInteractiveOperation.Value));
-    }
-
 
     public async Task<OperationResult<InteractiveByIdPublic>> DeleteInteractiveAsync(InteractiveType interactiveType, int interactiveId)
     {

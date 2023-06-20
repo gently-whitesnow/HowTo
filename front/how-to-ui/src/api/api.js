@@ -83,30 +83,28 @@ export class Api {
   getInteractive = (courseId, articleId) =>
     this.clientWrapper("get", `api/interactive/${courseId}/${articleId}`);
 
-  upsertInteractive = (interactiveId, articleId, courseId, description, upsertCheckList,
-    upsertChoiceOfAnswer, upsertProgramWriting, upsertWritingOfAnswer) => {
+  upsertInteractive = (upsertRequest) => {
     this.clientWrapper("post", `api/interactive`, {
-      interactive_id: interactiveId,
-      course_id: courseId,
-      article_id: articleId,
-      description: description,
-      upsert_check_list: upsertCheckList,
-      upsert_choice_of_answer: upsertChoiceOfAnswer,
-      upsert_program_writing: upsertProgramWriting,
-      upsert_writing_of_answer: upsertWritingOfAnswer
+      interactive_id: upsertRequest.interactiveId,
+      course_id: upsertRequest.courseId,
+      article_id: upsertRequest.articleId,
+      description: upsertRequest.description,
+      upsert_check_list: upsertRequest.upsertCheckList,
+      upsert_choice_of_answer: upsertRequest.upsertChoiceOfAnswer,
+      upsert_program_writing: upsertRequest.upsertProgramWriting,
+      upsert_writing_of_answer: upsertRequest.upsertWritingOfAnswer
     });
   }
 
-  upsertInteractiveReply = (interactiveId, articleId, courseId, upsertReplyCheckList,
-    upsertReplyChoiceOfAnswer, upsertReplyProgramWriting, upsertReplyWritingOfAnswer) => {
+  upsertInteractiveReply = (upsertRequest) => {
     this.clientWrapper("post", `api/interactive/reply`, {
-      interactive_id: interactiveId,
-      course_id: courseId,
-      article_id: articleId,
-      upsert_reply_check_list: upsertReplyCheckList,
-      upsert_reply_choice_of_answer: upsertReplyChoiceOfAnswer,
-      upsert_reply_program_writing: upsertReplyProgramWriting,
-      upsert_reply_writing_of_answer: upsertReplyWritingOfAnswer
+      interactive_id: upsertRequest.interactiveId,
+      course_id: upsertRequest.courseId,
+      article_id: upsertRequest.articleId,
+      upsert_reply_check_list: upsertRequest.upsertReplyCheckList,
+      upsert_reply_choice_of_answer: upsertRequest.upsertReplyChoiceOfAnswer,
+      upsert_reply_program_writing: upsertRequest.upsertReplyProgramWriting,
+      upsert_reply_writing_of_answer: upsertRequest.upsertReplyWritingOfAnswer
     });
   }
 

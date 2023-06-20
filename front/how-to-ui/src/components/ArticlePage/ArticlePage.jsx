@@ -15,6 +15,7 @@ import OneClickButton from "../common/OneClickButton/OneClickButton";
 import { useEffect } from "react";
 import { useStore } from "../../store";
 import { useParams } from "react-router-dom";
+import InteractiveHandler from "./Interactive/InteractiveHandler/InteractiveHandler";
 
 const ArticlePage = () => {
   const { colorStore, articleStore, viewStore, stateStore } = useStore();
@@ -45,6 +46,7 @@ const ArticlePage = () => {
         <ArticlePageDecorator color={currentColorTheme}>
           <MarkdownHandler color={currentColorTheme} />
         </ArticlePageDecorator>
+        <InteractiveHandler/>
         <ArticlePageButtonsWrapper>
           {article.id != undefined && !isLoading ? (
             <OneClickButton

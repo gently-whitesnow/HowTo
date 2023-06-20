@@ -1,5 +1,6 @@
 import { makeAutoObservable, configure } from "mobx";
 import api from "../api/api";
+import { camelize } from "../helpers/caseHelper";
 
 class InteractiveStore {
   constructor(rootStore) {
@@ -15,6 +16,16 @@ class InteractiveStore {
   lastInteractive = undefined;
   newInteractive = undefined;
 
+  isInteractiveChoise = false;
+
+  setIsInteractiveChoise = (data) => {
+    this.isInteractiveChoise = data;
+  };
+
+  setNewInteractive = (data) => {
+    this.newInteractive = data;
+  };
+
   addNewInteractive = (articleId, courseId, interactiveType) => {
     if (this.newInteractive !== undefined) {
       return;
@@ -29,34 +40,39 @@ class InteractiveStore {
     };
   };
 
-  addInteractiveData = (interactiveType, interactiveData) => {
+  addInteractiveData = (interactiveData) => {
     if (this.interactive === undefined) this.interactive = [];
 
-    let data = {}
-    if(interactiveType === InteractiveType.CheckList)
-    {
-      data = interactiveData.CheckList
-    }
-    else if(interactiveType === InteractiveType.ChoiceOfAnswer)
-    {
-      data = interactiveData.ChoiceOfAnswer
-    }
-    else if(interactiveType === InteractiveType.ProgramWriting)
-    {
-      data = interactiveData.ProgramWriting
-    }
-    else if(interactiveType === InteractiveType.WritingOfAnswer)
-    {
-      data = interactiveData.WritingOfAnswer
-    }
-    let ineractiveEntity = {
-      interactiveId: data.id,
-      courseId: data.course_id,
-      description: data.description,
-      isInteractiveEditing: false,
-    }
+    let data = camelize(
+      interactiveData.check_list ??
+        interactiveData.choice_of_answer ??
+        interactiveData.program_writing ??
+        interactiveData.writing_of_answer
+    );
+    this.interactive.push(data);
+  };
 
-    this.interactive.push();
+  addLastInteractiveData = (lastInteractiveData) => {
+    if (this.lastInteractive === undefined) this.lastInteractive = [];
+
+    var lastData =
+      lastInteractiveData.last_check_list ??
+      lastInteractiveData.last_choice_of_answer ??
+      lastInteractiveData.last_program_writing ??
+      lastInteractiveData.last_writing_of_answer;
+    lastData = camelize(lastData);
+
+    let elementIndex = this.lastInteractive.findIndex(
+      (i) =>
+        lastData.interactiveId === i.interactiveId &&
+        lastData.CourseId === i.CourseId &&
+        lastData.ArticleId === i.ArticleId
+    );
+    if (elementIndex === -1) {
+      this.lastInteractive.push(lastData);
+    } else {
+      this.lastInteractive[elementIndex] = lastData;
+    }
   };
 
   getInteractive = (courseId, articleId) => {
@@ -65,6 +81,7 @@ class InteractiveStore {
     api
       .getInteractive(courseId, articleId)
       .then(({ data }) => {
+        this.rootStore.stateStore.setIsLoading(false);
         this.interactive = data.interactive;
         this.lastInteractive = data.lastInteractive;
       })
@@ -78,30 +95,17 @@ class InteractiveStore {
       });
   };
 
-  upsertInteractive = (
-    interactiveId,
-    articleId,
-    courseId,
-    description,
-    isNewInteractive,
-    errorCallback
-  ) => {
+  upsertInteractive = (upsertRequest, isNewInteractive, errorCallback) => {
     this.rootStore.stateStore.setIsLoading(true);
     api
-      .upsertInteractive(
-        articleId,
-        courseId,
-        interactiveId,
-        description,
-        TODO_ELEMENTS
-      )
+      .upsertInteractive(upsertRequest)
       .then(({ data }) => {
+        console.log(data);
         this.rootStore.stateStore.setIsLoading(false);
 
         if (isNewInteractive) {
-          this.setNewArticle(undefined);
-          // TODO
-          this.interactive.push(data.TODO);
+          this.addNewInteractive(undefined);
+          this.addInteractiveData(data);
         }
         errorCallback();
       })
@@ -114,20 +118,15 @@ class InteractiveStore {
       });
   };
 
-  upsertInteractiveReply = (
-    interactiveId,
-    articleId,
-    courseId,
-    errorCallback
-  ) => {
+  upsertInteractiveReply = (upsertRequest, errorCallback) => {
     this.rootStore.stateStore.setIsLoading(true);
     api
-      .upsertInteractiveReply(articleId, courseId, interactiveId, TODO_ELEMENTS)
+      .upsertInteractiveReply(upsertRequest)
       .then(({ data }) => {
+        console.log(data);
         this.rootStore.stateStore.setIsLoading(false);
 
-        // TODO
-        this.lastInteractive.push(data.TODO);
+        this.addLastInteractiveData(data);
         errorCallback();
       })
       .catch((err) => {
@@ -145,7 +144,12 @@ class InteractiveStore {
       .deleteInteractive(interactiveType, interactiveId)
       .then(({ data }) => {
         this.rootStore.stateStore.setIsLoading(false);
-        // TODO this.interactive remove element
+        this.interactive = this.interactive.filter(
+          (obj) => obj.interactiveId !== data.interactive_id
+        );
+        this.lastInteractive = this.lastInteractive.filter(
+          (obj) => obj.interactiveId !== data.interactive_id
+        );
       })
       .catch((err) => {
         this.rootStore.stateStore.setIsLoading(false);
@@ -165,10 +169,3 @@ class InteractiveStore {
 }
 
 export default InteractiveStore;
-
-export const InteractiveType = Enum({
-  CheckList: 0,
-  ChoiceOfAnswer: 1,
-  ProgramWriting: 2,
-  WritingOfAnswer: 3,
-});

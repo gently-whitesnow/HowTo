@@ -133,29 +133,6 @@ var foo = function (bar) {
 console.log(foo(5));
 ```
 
-!test
-
-+= positive positive positive positive positive positive positive positive  
--= negativenegative negative negative negative negative negative negative
-+= положительный положительный: лучший ответ - положительный
--= негативный отрицательный не - правильный ответ  
-
-!test
-
-
-!test    
-+= test test
--= test - test
-+= best test!
-!test
-
-
-!test    
-+= test test
--= test - test
--= best test!
-!test
-
 ``` hljs
 var foo = function (bar) {
   return bar++;

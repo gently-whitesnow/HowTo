@@ -14,8 +14,22 @@ import { useStore } from "../../store";
 import { useEffect } from "react";
 
 const Header = () => {
-  const { colorStore, courseStore, stateStore } = useStore();
+  const {
+    colorStore,
+    courseStore,
+    stateStore,
+    interactiveStore,
+    articleStore,
+  } = useStore();
   const { currentColorTheme, setColorTheme } = colorStore;
+  const {
+    newInteractive,
+    setNewInteractive,
+    addNewInteractive,
+    setIsInteractiveChoise,
+    isInteractiveChoise,
+  } = interactiveStore;
+  const { article } = articleStore;
   const { addNewArticle, id } = courseStore;
   const { isAuthorized, isNotFound, setIsNotFound, isLoading } = stateStore;
 
@@ -42,39 +56,70 @@ const Header = () => {
   const getCurrentHeader = () => {
     if (isLoading) return null;
     if (maybeIsCourse && maybeIsArticle) {
-      return (
-        <>
-          <Button
-            onClick={() =>
-              onClickHandler(path.substring(0, path.lastIndexOf("/")))
-            }
-            content="Назад"
-          />
-          <Colorimetr color={currentColorTheme} onClick={setColorTheme} />
-        </>
-      );
+      return getArticlePageHeader();
     } else if (maybeIsCourse) {
-      return (
-        <>
-          <Button
-            onClick={() =>
-              onClickHandler(path.substring(0, path.lastIndexOf("/")))
-            }
-            content="Назад"
-          />
-          <ColorimetrWrapper>
-            {id ? (
-              <Button
-                onClick={() => addNewArticle()}
-                content="Добавить страницу"
-              />
-            ) : null}
-
-            <Colorimetr color={currentColorTheme} onClick={setColorTheme} />
-          </ColorimetrWrapper>
-        </>
-      );
+      return getCoursePageHeader();
     }
+    return getHomePageHeader();
+  };
+
+  const getArticlePageHeader = () => {
+    return (
+      <>
+        <Button
+          onClick={() =>
+            onClickHandler(path.substring(0, path.lastIndexOf("/")))
+          }
+          content="Назад"
+        />
+        <ColorimetrWrapper>
+          {article.isAuthor ? (
+            newInteractive || isInteractiveChoise ? (
+              <Button
+                onClick={() => {
+                  setNewInteractive(undefined);
+                  setIsInteractiveChoise(false);
+                }}
+                content="Сбросить"
+              />
+            ) : (
+              <Button
+                onClick={() => setIsInteractiveChoise(true)}
+                content="Добавить интерактив"
+              />
+            )
+          ) : null}
+
+          <Colorimetr color={currentColorTheme} onClick={setColorTheme} />
+        </ColorimetrWrapper>
+      </>
+    );
+  };
+
+  const getCoursePageHeader = () => {
+    return (
+      <>
+        <Button
+          onClick={() =>
+            onClickHandler(path.substring(0, path.lastIndexOf("/")))
+          }
+          content="Назад"
+        />
+        <ColorimetrWrapper>
+          {id ? (
+            <Button
+              onClick={() => addNewArticle()}
+              content="Добавить страницу"
+            />
+          ) : null}
+
+          <Colorimetr color={currentColorTheme} onClick={setColorTheme} />
+        </ColorimetrWrapper>
+      </>
+    );
+  };
+
+  const getHomePageHeader = () => {
     return (
       <>
         <div />

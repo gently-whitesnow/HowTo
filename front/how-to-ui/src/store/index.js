@@ -1,5 +1,4 @@
 import React from "react";
-import TestStore from "./testStore";
 import ColorStore from "./colorStore";
 import SummaryStore from "./summaryStore";
 import CourseStore from "./courseStore";
@@ -10,7 +9,6 @@ import InteractiveStore from "./interactiveStore";
 
 class Store {
   constructor() {
-    this.testStore = new TestStore(this);
     this.colorStore = new ColorStore(this);
 
     this.summaryStore = new SummaryStore(this);
