@@ -43,15 +43,15 @@ export class Api {
 
   // articles
 
-  getArticle = (coursePath, articlePath) =>
-    this.clientWrapper("get", `api/articles/${coursePath}/${articlePath}`);
+  getArticle = (courseId, articleId) =>
+    this.clientWrapper("get", `api/articles/${courseId}/${articleId}`);
 
   upsertArticle = (articleId, courseId, title, file) => {
     const formData = new FormData();
-    if(articleId!==undefined){
+    if (articleId !== undefined) {
       formData.append("articleId", articleId);
     }
-    if(file!==undefined){
+    if (file !== undefined) {
       formData.append("file", file);
     }
     formData.append("courseId", courseId);
@@ -77,6 +77,41 @@ export class Api {
       "get",
       `api/fakeauth?userId=${userId}&userName=${userName}`
     );
+
+  // interactive
+
+  getInteractive = (courseId, articleId) =>
+    this.clientWrapper("get", `api/interactive/${courseId}/${articleId}`);
+
+  upsertInteractive = (interactiveId, articleId, courseId, description, upsertCheckList,
+    upsertChoiceOfAnswer, upsertProgramWriting, upsertWritingOfAnswer) => {
+    this.clientWrapper("post", `api/interactive`, {
+      interactive_id: interactiveId,
+      course_id: courseId,
+      article_id: articleId,
+      description: description,
+      upsert_check_list: upsertCheckList,
+      upsert_choice_of_answer: upsertChoiceOfAnswer,
+      upsert_program_writing: upsertProgramWriting,
+      upsert_writing_of_answer: upsertWritingOfAnswer
+    });
+  }
+
+  upsertInteractiveReply = (interactiveId, articleId, courseId, upsertReplyCheckList,
+    upsertReplyChoiceOfAnswer, upsertReplyProgramWriting, upsertReplyWritingOfAnswer) => {
+    this.clientWrapper("post", `api/interactive/reply`, {
+      interactive_id: interactiveId,
+      course_id: courseId,
+      article_id: articleId,
+      upsert_reply_check_list: upsertReplyCheckList,
+      upsert_reply_choice_of_answer: upsertReplyChoiceOfAnswer,
+      upsert_reply_program_writing: upsertReplyProgramWriting,
+      upsert_reply_writing_of_answer: upsertReplyWritingOfAnswer
+    });
+  }
+
+  deleteInteractive = (interactiveType, interactiveId) =>
+    this.clientWrapper("delete", `api/interactive/${interactiveType}/${interactiveId}`);
 }
 const api = new Api();
 

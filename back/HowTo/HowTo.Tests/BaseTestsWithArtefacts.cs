@@ -84,17 +84,17 @@ public abstract class BaseTestsWithArtefacts : BaseTests
     ) =>
         _interactiveManager.UpsertInteractiveAsync(new UpsertInteractiveRequest
         {
-            Id = id,
+            InteractiveId = id,
             ArticleId = articlePublic.Id,
             CourseId = articlePublic.CourseId,
             Description = description ?? "TestDescription",
-            UpsertCheckListRequest = checkListRequest,
-            UpsertChoiceOfAnswerRequest = choiceOfAnswerRequest,
-            UpsertProgramWritingRequest = programWritingRequest,
-            UpsertWritingOfAnswerRequest = writingOfAnswerRequest
+            UpsertCheckList = checkListRequest,
+            UpsertChoiceOfAnswer = choiceOfAnswerRequest,
+            UpsertProgramWriting = programWritingRequest,
+            UpsertWritingOfAnswer = writingOfAnswerRequest
         }).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
     
-    protected Task<OperationResult<LastInteractivePublic>> InitInteractiveReplyAsync(
+    protected Task<OperationResult<LastInteractiveByIdPublic>> InitInteractiveReplyAsync(
         int courseId,
         int articleId,
         int interactiveId,
@@ -108,10 +108,10 @@ public abstract class BaseTestsWithArtefacts : BaseTests
             InteractiveId = interactiveId,
             ArticleId = articleId,
             CourseId = courseId,
-            ReplyCheckList = checkListRequest,
-            ReplyAnswerChoice = choiceOfAnswerRequest,
-            ReplyProgramWriting = programWritingRequest,
-            ReplyWritingOfAnswer = writingOfAnswerRequest
+            UpsertReplyCheckList = checkListRequest,
+            UpsertReplyAnswerChoice = choiceOfAnswerRequest,
+            UpsertReplyProgramWriting = programWritingRequest,
+            UpsertReplyWritingOfAnswer = writingOfAnswerRequest
         },
             user ?? FirstUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
 }

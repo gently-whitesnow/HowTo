@@ -1,21 +1,35 @@
+using System.Linq;
 using HowTo.Entities.Interactive.Base;
-using HowTo.Entities.Interactive.CheckList;
 using HowTo.Entities.Interactive.ChoiceOfAnswers;
 using Newtonsoft.Json;
 
 namespace HowTo.Entities.Interactive.ChoiceOfAnswer;
 
-public class LastChoiceOfAnswerPublic : LastInteractiveBase
+public class LastChoiceOfAnswerPublic : LastInteractivePublicBase
 {
+    public LastChoiceOfAnswerPublic(UpsertInteractiveReplyRequest request, ChoiceOfAnswerDto choiceOfAnswerDto)
+    {
+        InteractiveId = request.InteractiveId;
+        ArticleId = request.ArticleId;
+        CourseId = request.CourseId;
+        Answers = request.UpsertReplyAnswerChoice.Answers;
+        SuccessAnswers = ValidateChoiceOfAnswer(request.UpsertReplyAnswerChoice.Answers,
+            JsonConvert.DeserializeObject<bool[]>(choiceOfAnswerDto.AnswersJsonBoolArray));
+        InteractiveType = InteractiveType.ChoiceOfAnswer;
+    }
+    
     public LastChoiceOfAnswerPublic(LastChoiceOfAnswerDto dto)
     {
-        Id = dto.Id;
+        InteractiveId = dto.InteractiveId;
         ArticleId = dto.ArticleId;
         CourseId = dto.CourseId;
-        UserId = dto.UserId;
         Answers = JsonConvert.DeserializeObject<bool[]>(dto.AnswersJsonBoolArray);
         SuccessAnswers = JsonConvert.DeserializeObject<bool[]>(dto.SuccessAnswersJsonBoolArray);
+        InteractiveType = InteractiveType.ChoiceOfAnswer;
     }
     public bool[] Answers { get; set; }
     public bool[]? SuccessAnswers { get; set; }
+    
+    private bool[] ValidateChoiceOfAnswer(bool[] request, bool[] solve) =>
+        request.Zip(solve, (reply, answer) => reply == answer).ToArray();
 }

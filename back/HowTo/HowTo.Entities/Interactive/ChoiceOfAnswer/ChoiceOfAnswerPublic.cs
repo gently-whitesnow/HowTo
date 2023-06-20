@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace HowTo.Entities.Interactive.ChoiceOfAnswer;
 
-public class ChoiceOfAnswerPublic : InteractiveBase
+public class ChoiceOfAnswerPublic : InteractivePublicBase
 {
     public ChoiceOfAnswerPublic(ChoiceOfAnswerDto dto, bool isAuthor = true)
     {
@@ -14,6 +14,7 @@ public class ChoiceOfAnswerPublic : InteractiveBase
         Description = dto.Description;
         Questions = JsonConvert.DeserializeObject<string[]>(dto.QuestionsJsonStringArray);
         Answers = isAuthor ? JsonConvert.DeserializeObject<bool[]>(dto.AnswersJsonBoolArray) : null;
+        InteractiveType = InteractiveType.ChoiceOfAnswer;
     }
 
     public string[] Questions { get; set; }

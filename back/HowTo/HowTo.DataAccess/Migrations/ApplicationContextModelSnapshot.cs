@@ -97,7 +97,7 @@ namespace HowTo.DataAccess.Migrations
                     b.ToTable("CourseContext");
                 });
 
-            modelBuilder.Entity("HowTo.Entities.Interactive.Base.InteractiveBase", b =>
+            modelBuilder.Entity("HowTo.Entities.Interactive.CheckList.CheckListDto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -105,6 +105,10 @@ namespace HowTo.DataAccess.Migrations
 
                     b.Property<int>("ArticleId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("ClausesJsonStringArray")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("CourseId")
                         .HasColumnType("INTEGER");
@@ -113,44 +117,35 @@ namespace HowTo.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
 
-                    b.ToTable("InteractiveContext");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("InteractiveBase");
-
-                    b.UseTphMappingStrategy();
+                    b.ToTable("CheckListContext");
                 });
 
             modelBuilder.Entity("HowTo.Entities.Interactive.CheckList.LastCheckListDto", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("InteractiveId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CourseId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("ArticleId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("CheckedClausesJsonBoolArray")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("CourseId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
+                    b.HasKey("InteractiveId", "CourseId", "ArticleId", "UserId");
 
                     b.ToTable("LastCheckListContext");
                 });
 
-            modelBuilder.Entity("HowTo.Entities.Interactive.ChoiceOfAnswers.LastChoiceOfAnswerDto", b =>
+            modelBuilder.Entity("HowTo.Entities.Interactive.ChoiceOfAnswers.ChoiceOfAnswerDto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -166,14 +161,42 @@ namespace HowTo.DataAccess.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("SuccessAnswersJsonBoolArray")
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("QuestionsJsonStringArray")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ChoiceOfAnswerContext");
+                });
+
+            modelBuilder.Entity("HowTo.Entities.Interactive.ChoiceOfAnswers.LastChoiceOfAnswerDto", b =>
+                {
+                    b.Property<int>("InteractiveId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ArticleId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.Property<string>("AnswersJsonBoolArray")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SuccessAnswersJsonBoolArray")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("InteractiveId", "CourseId", "ArticleId", "UserId");
 
                     b.ToTable("LastChoiceOfAnswerContext");
                 });
@@ -208,27 +231,26 @@ namespace HowTo.DataAccess.Migrations
 
             modelBuilder.Entity("HowTo.Entities.Interactive.ProgramWriting.LastProgramWritingDto", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("InteractiveId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CourseId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("ArticleId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("CourseId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<bool>("Success")
                         .HasColumnType("INTEGER");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
+                    b.HasKey("InteractiveId", "CourseId", "ArticleId", "UserId");
 
                     b.ToTable("LastProgramWritingContext");
                 });
@@ -260,29 +282,57 @@ namespace HowTo.DataAccess.Migrations
                     b.ToTable("LogProgramWritingContext");
                 });
 
-            modelBuilder.Entity("HowTo.Entities.Interactive.WritingOfAnswer.LastWritingOfAnswerDto", b =>
+            modelBuilder.Entity("HowTo.Entities.Interactive.ProgramWriting.ProgramWritingDto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Answer")
+                    b.Property<int>("ArticleId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ArticleId")
+                    b.Property<int>("CourseId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Output")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProgramWritingContext");
+                });
+
+            modelBuilder.Entity("HowTo.Entities.Interactive.WritingOfAnswer.LastWritingOfAnswerDto", b =>
+                {
+                    b.Property<int>("InteractiveId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("CourseId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("Success")
+                    b.Property<int>("ArticleId")
                         .HasColumnType("INTEGER");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Success")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("InteractiveId", "CourseId", "ArticleId", "UserId");
 
                     b.ToTable("LastWritingOfAnswerContext");
                 });
@@ -312,6 +362,31 @@ namespace HowTo.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("LogWritingOfAnswerContext");
+                });
+
+            modelBuilder.Entity("HowTo.Entities.Interactive.WritingOfAnswer.WritingOfAnswerDto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ArticleId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WritingOfAnswerContext");
                 });
 
             modelBuilder.Entity("HowTo.Entities.UserInfo.UserUniqueInfoDto", b =>
@@ -383,58 +458,6 @@ namespace HowTo.DataAccess.Migrations
                     b.HasKey("CourseId", "ArticleId");
 
                     b.ToTable("ViewContext");
-                });
-
-            modelBuilder.Entity("HowTo.Entities.Interactive.CheckList.CheckListDto", b =>
-                {
-                    b.HasBaseType("HowTo.Entities.Interactive.Base.InteractiveBase");
-
-                    b.Property<string>("ClausesJsonStringArray")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasDiscriminator().HasValue("CheckListDto");
-                });
-
-            modelBuilder.Entity("HowTo.Entities.Interactive.ChoiceOfAnswers.ChoiceOfAnswerDto", b =>
-                {
-                    b.HasBaseType("HowTo.Entities.Interactive.Base.InteractiveBase");
-
-                    b.Property<string>("AnswersJsonBoolArray")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("QuestionsJsonStringArray")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasDiscriminator().HasValue("ChoiceOfAnswerDto");
-                });
-
-            modelBuilder.Entity("HowTo.Entities.Interactive.ProgramWriting.ProgramWritingDto", b =>
-                {
-                    b.HasBaseType("HowTo.Entities.Interactive.Base.InteractiveBase");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Output")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasDiscriminator().HasValue("ProgramWritingDto");
-                });
-
-            modelBuilder.Entity("HowTo.Entities.Interactive.WritingOfAnswer.WritingOfAnswerDto", b =>
-                {
-                    b.HasBaseType("HowTo.Entities.Interactive.Base.InteractiveBase");
-
-                    b.Property<string>("Answer")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasDiscriminator().HasValue("WritingOfAnswerDto");
                 });
 
             modelBuilder.Entity("HowTo.Entities.Article.ArticleDto", b =>

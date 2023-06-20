@@ -3,15 +3,25 @@ using Newtonsoft.Json;
 
 namespace HowTo.Entities.Interactive.CheckList;
 
-public class LastCheckListPublic : LastInteractiveBase
+public class LastCheckListPublic : LastInteractivePublicBase
 {
+    public LastCheckListPublic(UpsertInteractiveReplyRequest request)
+    {
+        InteractiveId = request.InteractiveId;
+        CourseId = request.CourseId;
+        ArticleId = request.ArticleId;
+        Clauses = request.UpsertReplyCheckList.Clauses;
+        InteractiveType = InteractiveType.CheckList;
+    }
+    
     public LastCheckListPublic(LastCheckListDto dto)
     {
-        Id = dto.Id;
-        ArticleId = dto.ArticleId;
+        InteractiveId = dto.InteractiveId;
         CourseId = dto.CourseId;
-        UserId = dto.UserId;
+        ArticleId = dto.ArticleId;
         Clauses = JsonConvert.DeserializeObject<bool[]>(dto.CheckedClausesJsonBoolArray);
+        InteractiveType = InteractiveType.CheckList;
     }
+    
     public bool[] Clauses { get; set; }
 }

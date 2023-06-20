@@ -28,11 +28,8 @@ public class ApplicationContext : DbContext
     public DbSet<ViewedEntity> UserViewEntityContext { get; set; }
 
     #region Interactive
-
-    public DbSet<InteractiveBase> InteractiveContext { get; set; }
     
     public DbSet<CheckListDto> CheckListContext { get; set; }
-    
     public DbSet<ChoiceOfAnswerDto> ChoiceOfAnswerContext { get; set; }
     public DbSet<LogChoiceOfAnswerDto> LogChoiceOfAnswerContext { get; set; }
     

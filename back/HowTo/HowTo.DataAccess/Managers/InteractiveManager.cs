@@ -7,6 +7,7 @@ using ATI.Services.Common.Extensions.OperationResult;
 using HowTo.DataAccess.Repositories;
 using HowTo.Entities;
 using HowTo.Entities.Interactive;
+using HowTo.Entities.Interactive.Base;
 using HowTo.Entities.Interactive.CheckList;
 using HowTo.Entities.Interactive.ChoiceOfAnswer;
 using HowTo.Entities.Interactive.ChoiceOfAnswers;
@@ -39,24 +40,24 @@ public class InteractiveManager
         var interactive = GetInteractive(request);
         dynamic interactiveOperation = interactive switch
         {
-            Interactive.CheckList => await _interactiveRepository.UpsertInteractiveAsync(
-                dto => dto.Id == request.Id,
+            InteractiveType.CheckList => await _interactiveRepository.UpsertInteractiveAsync(
+                dto => dto.Id == request.InteractiveId,
                 () => new CheckListDto
                 {
                     ArticleId = request.ArticleId,
                     CourseId = request.CourseId,
                     Description = request.Description,
-                    ClausesJsonStringArray = JsonConvert.SerializeObject(request.UpsertCheckListRequest.Clauses),
+                    ClausesJsonStringArray = JsonConvert.SerializeObject(request.UpsertCheckList.Clauses),
                 },
                 dto =>
                 {
                     dto.Description = request.Description;
-                    dto.ClausesJsonStringArray = JsonConvert.SerializeObject(request.UpsertCheckListRequest.Clauses);
+                    dto.ClausesJsonStringArray = JsonConvert.SerializeObject(request.UpsertCheckList.Clauses);
                 }),
             
             
-            Interactive.ChoiceOfAnswer => await _interactiveRepository.UpsertInteractiveAsync(
-                dto => dto.Id == request.Id,
+            InteractiveType.ChoiceOfAnswer => await _interactiveRepository.UpsertInteractiveAsync(
+                dto => dto.Id == request.InteractiveId,
                 () => new ChoiceOfAnswerDto
                     {
                         ArticleId = request.ArticleId,
@@ -64,52 +65,52 @@ public class InteractiveManager
 
                         Description = request.Description,
                         QuestionsJsonStringArray =
-                            JsonConvert.SerializeObject(request.UpsertChoiceOfAnswerRequest.Questions),
-                        AnswersJsonBoolArray = JsonConvert.SerializeObject(request.UpsertChoiceOfAnswerRequest.Answers),
+                            JsonConvert.SerializeObject(request.UpsertChoiceOfAnswer.Questions),
+                        AnswersJsonBoolArray = JsonConvert.SerializeObject(request.UpsertChoiceOfAnswer.Answers),
                     },
                 dto =>
                 {
                     dto.Description = request.Description;
                     dto.QuestionsJsonStringArray =
-                        JsonConvert.SerializeObject(request.UpsertChoiceOfAnswerRequest.Questions);
+                        JsonConvert.SerializeObject(request.UpsertChoiceOfAnswer.Questions);
                     dto.AnswersJsonBoolArray =
-                        JsonConvert.SerializeObject(request.UpsertChoiceOfAnswerRequest.Answers);
+                        JsonConvert.SerializeObject(request.UpsertChoiceOfAnswer.Answers);
                 }),
             
             
-            Interactive.ProgramWriting => await _interactiveRepository.UpsertInteractiveAsync(
-                dto => dto.Id == request.Id,
+            InteractiveType.ProgramWriting => await _interactiveRepository.UpsertInteractiveAsync(
+                dto => dto.Id == request.InteractiveId,
                 () => new ProgramWritingDto
                     {
                         ArticleId = request.ArticleId,
                         CourseId = request.CourseId,
 
                         Description = request.Description,
-                        Code = request.UpsertProgramWritingRequest.Code,
-                        Output = request.UpsertProgramWritingRequest.Output
+                        Code = request.UpsertProgramWriting.Code,
+                        Output = request.UpsertProgramWriting.Output
                     },
                 dto =>
                 {
                     dto.Description = request.Description;
-                    dto.Code = request.UpsertProgramWritingRequest.Code;
-                    dto.Output = request.UpsertProgramWritingRequest.Output;
+                    dto.Code = request.UpsertProgramWriting.Code;
+                    dto.Output = request.UpsertProgramWriting.Output;
                 }),
             
             
-            Interactive.WritingOfAnswer => await _interactiveRepository.UpsertInteractiveAsync(
-                dto => dto.Id == request.Id,
+            InteractiveType.WritingOfAnswer => await _interactiveRepository.UpsertInteractiveAsync(
+                dto => dto.Id == request.InteractiveId,
                 () => new WritingOfAnswerDto
                     {
                         ArticleId = request.ArticleId,
                         CourseId = request.CourseId,
 
                         Description = request.Description,
-                        Answer = request.UpsertWritingOfAnswerRequest.Answer
+                        Answer = request.UpsertWritingOfAnswer.Answer
                     },
                 dto =>
                 {
                     dto.Description = request.Description;
-                    dto.Answer = request.UpsertWritingOfAnswerRequest.Answer;
+                    dto.Answer = request.UpsertWritingOfAnswer.Answer;
                 }),
             _ => new OperationResult<InteractivePublic>(new ArgumentException("Invalid interactive type."))
         };
@@ -120,7 +121,7 @@ public class InteractiveManager
     }
 
 
-    public async Task<OperationResult<LastInteractivePublic>> UpsertInteractiveReplyAsync(
+    public async Task<OperationResult<LastInteractiveByIdPublic>> UpsertInteractiveReplyAsync(
         UpsertInteractiveReplyRequest request, User user)
     {
         var articleOperation = await _articleRepository.GetArticleByIdAsync(request.CourseId, request.ArticleId);
@@ -128,98 +129,93 @@ public class InteractiveManager
             return new(articleOperation);
 
         var interactive = GetInteractiveReply(request);
-        var interactiveOperation = interactive switch
+        return interactive switch
         {
-            Interactive.CheckList => await _interactiveRepository.GetInteractiveByIdAsync<CheckListDto>(request.InteractiveId),
-            Interactive.ChoiceOfAnswer => await _interactiveRepository.GetInteractiveByIdAsync<ChoiceOfAnswerDto>(request.InteractiveId),
-            Interactive.ProgramWriting => await _interactiveRepository.GetInteractiveByIdAsync<ProgramWritingDto>(request.InteractiveId),
-            Interactive.WritingOfAnswer => await _interactiveRepository.GetInteractiveByIdAsync<WritingOfAnswerDto>(request.InteractiveId),
+            InteractiveType.CheckList => await UpsertLastInteractiveAsync<CheckListDto, LastCheckListDto>
+            (request.InteractiveId, 
+                _ => new LastInteractiveByIdPublic(new LastCheckListPublic(request)),
+                (lastInteractive)=> _interactiveRepository.UpsertInteractiveAsync(
+                    dto => dto.UserId == user.Id && dto.InteractiveId == lastInteractive.LastCheckList.InteractiveId,
+                    () => new LastCheckListDto
+                    {
+                        InteractiveId = request.InteractiveId,
+                        ArticleId = request.ArticleId,
+                        CourseId = request.CourseId,
+                        UserId = user.Id,
+                        CheckedClausesJsonBoolArray = JsonConvert.SerializeObject(lastInteractive.LastCheckList.Clauses),
+                    },
+                    dto =>
+                    {
+                        dto.CheckedClausesJsonBoolArray = JsonConvert.SerializeObject(lastInteractive.LastCheckList.Clauses);
+                    })),
+            
+            
+            InteractiveType.ChoiceOfAnswer=>await UpsertLastInteractiveAsync<ChoiceOfAnswerDto, LastChoiceOfAnswerDto>
+            (request.InteractiveId, 
+                interactiveDto => new LastInteractiveByIdPublic(new LastChoiceOfAnswerPublic(request, interactiveDto)),
+                (lastInteractive)=> _interactiveRepository.UpsertInteractiveAsync(
+                    dto => dto.UserId == user.Id && dto.InteractiveId == lastInteractive.LastChoiceOfAnswer.InteractiveId,
+                    () => new LastChoiceOfAnswerDto
+                    {
+                        InteractiveId = request.InteractiveId,
+                        ArticleId = request.ArticleId,
+                        CourseId = request.CourseId,
+                        UserId = user.Id,
+                        SuccessAnswersJsonBoolArray = JsonConvert.SerializeObject(lastInteractive.LastChoiceOfAnswer.SuccessAnswers),
+                        AnswersJsonBoolArray = JsonConvert.SerializeObject(lastInteractive.LastChoiceOfAnswer.Answers),
+                    },
+                    dto =>
+                    {
+                        dto.SuccessAnswersJsonBoolArray = JsonConvert.SerializeObject(lastInteractive.LastChoiceOfAnswer.SuccessAnswers);
+                        dto.AnswersJsonBoolArray = JsonConvert.SerializeObject(lastInteractive.LastChoiceOfAnswer.Answers);
+                    }).InvokeOnSuccessAsync(LogChoiceOfAnswerAsync)),
+            
+            
+            InteractiveType.ProgramWriting=> await UpsertLastInteractiveAsync<ProgramWritingDto, LastProgramWritingDto>
+            (request.InteractiveId, 
+                interactiveDto => new LastInteractiveByIdPublic(new LastProgramWritingPublic(request, interactiveDto)),
+                (lastInteractive)=> _interactiveRepository.UpsertInteractiveAsync(
+                    dto => dto.UserId == user.Id && dto.InteractiveId == lastInteractive.LastProgramWriting.InteractiveId,
+                    () => new LastProgramWritingDto
+                    {
+                        InteractiveId = request.InteractiveId,
+                        ArticleId = request.ArticleId,
+                        CourseId = request.CourseId,
+                        UserId = user.Id,
+                        Code = request.UpsertReplyProgramWriting.Code,
+                        Success = lastInteractive.LastProgramWriting.Success
+                    },
+                    dto =>
+                    {
+                        dto.Code = request.UpsertReplyProgramWriting.Code;
+                        dto.Success = lastInteractive.LastProgramWriting.Success;
+                    }).InvokeOnSuccessAsync(LogProgramWritingAsync)),
+            
+            
+            InteractiveType.WritingOfAnswer=> await UpsertLastInteractiveAsync<WritingOfAnswerDto, LastWritingOfAnswerDto>
+            (request.InteractiveId, 
+                interactiveDto => new LastInteractiveByIdPublic(new LastWritingOfAnswerPublic(request, interactiveDto)),
+                (lastInteractive)=> _interactiveRepository.UpsertInteractiveAsync(
+                    dto => dto.UserId == user.Id && dto.InteractiveId == lastInteractive.LastWritingOfAnswer.InteractiveId,
+                    () => new LastWritingOfAnswerDto
+                    {
+                        InteractiveId = request.InteractiveId,
+                        ArticleId = request.ArticleId,
+                        CourseId = request.CourseId,
+                        UserId = user.Id,
+                        Answer = request.UpsertReplyWritingOfAnswer.Answer,
+                        Success = lastInteractive.LastWritingOfAnswer.Success
+                    },
+                    dto =>
+                    {
+                        dto.Answer = request.UpsertReplyWritingOfAnswer.Answer;
+                        dto.Success = lastInteractive.LastWritingOfAnswer.Success;
+                    }).InvokeOnSuccessAsync(LogWritingOfAnswerAsync)),
+            
             _ => new (new ArgumentException("Invalid interactive type."))
         };
-        
-        if (!articleOperation.Success)
-            return new(articleOperation);
-
-        dynamic lastInteractiveOperation = interactive switch
-        {
-            Interactive.CheckList => await _interactiveRepository.UpsertInteractiveAsync(
-                dto => dto.UserId == user.Id,
-                () => new LastCheckListDto
-                    {
-                        ArticleId = request.ArticleId,
-                        CourseId = request.CourseId,
-                        UserId = user.Id,
-                        CheckedClausesJsonBoolArray = JsonConvert.SerializeObject(request.ReplyCheckList.Clauses),
-                    },
-                dto =>
-                {
-                    dto.CheckedClausesJsonBoolArray = JsonConvert.SerializeObject(request.ReplyCheckList.Clauses);
-                }),
-            
-            
-            Interactive.ChoiceOfAnswer => (await _interactiveRepository.UpsertInteractiveAsync(
-                dto => dto.UserId == user.Id,
-                () => new LastChoiceOfAnswerDto
-                    {
-                        ArticleId = request.ArticleId,
-                        CourseId = request.CourseId,
-                        UserId = user.Id,
-                        SuccessAnswersJsonBoolArray = ValidateChoiceOfAnswer(request.ReplyAnswerChoice,
-                            interactiveOperation.Value.ChoiceOfAnswer),
-                        AnswersJsonBoolArray = JsonConvert.SerializeObject(request.ReplyAnswerChoice.Answers),
-                    },
-                dto =>
-                {
-                    dto.SuccessAnswersJsonBoolArray = ValidateChoiceOfAnswer(request.ReplyAnswerChoice,
-                        interactiveOperation.Value.ChoiceOfAnswer);
-                    dto.AnswersJsonBoolArray = JsonConvert.SerializeObject(request.ReplyAnswerChoice.Answers);
-                })).InvokeOnSuccess(LogChoiceOfAnswerAsync),
-            
-            
-            Interactive.ProgramWriting => (await _interactiveRepository.UpsertInteractiveAsync(
-                dto => dto.UserId == user.Id,
-                () => new LastProgramWritingDto
-                    {
-                        ArticleId = request.ArticleId,
-                        CourseId = request.CourseId,
-                        UserId = user.Id,
-                        Code = request.ReplyProgramWriting.Code,
-                        Success = ValidateProgramWriting(request.ReplyProgramWriting)
-                    },
-                dto =>
-                {
-                    dto.Code = request.ReplyProgramWriting.Code;
-                    dto.Success = ValidateProgramWriting(request.ReplyProgramWriting);
-                })).InvokeOnSuccess(LogProgramWritingAsync),
-            
-            
-            Interactive.WritingOfAnswer => (await _interactiveRepository.UpsertInteractiveAsync(
-                dto => dto.UserId == user.Id,
-                () => new LastWritingOfAnswerDto
-                    {
-                        ArticleId = request.ArticleId,
-                        CourseId = request.CourseId,
-                        UserId = user.Id,
-                        Answer = request.ReplyWritingOfAnswer.Answer,
-                        Success = ValidateWritingOfAnswer(request.ReplyWritingOfAnswer, interactiveOperation.Value.WritingOfAnswer)
-                    },
-                dto =>
-                {
-                    dto.Answer = request.ReplyWritingOfAnswer.Answer;
-                    dto.Success = ValidateWritingOfAnswer(request.ReplyWritingOfAnswer,
-                        interactiveOperation.Value.WritingOfAnswer);
-                })).InvokeOnSuccess(LogWritingOfAnswerAsync),
-            
-            
-            _ => new OperationResult<InteractivePublic>(new ArgumentException("Invalid interactive type."))
-        };
-        if (!lastInteractiveOperation.Success)
-            return new(lastInteractiveOperation);
-        
-        return new(new LastInteractivePublic(lastInteractiveOperation.Value));
     }
-
-
+    
     public async Task<OperationResult<InteractiveResponse>> GetInteractiveAsync(
         int courseId,
         int articleId,
@@ -242,50 +238,80 @@ public class InteractiveManager
     }
 
 
-    public async Task<OperationResult<InteractiveByIdPublic>> DeleteInteractiveAsync(Interactive interactive, int interactiveId)
+    public async Task<OperationResult<InteractiveByIdPublic>> DeleteInteractiveAsync(InteractiveType interactiveType, int interactiveId)
     {
-        return interactive switch
+        return interactiveType switch
         {
-            Interactive.CheckList => await _interactiveRepository.DeleteInteractiveByIdAsync<CheckListDto>(interactiveId),
-            Interactive.ChoiceOfAnswer => await _interactiveRepository.DeleteInteractiveByIdAsync<ChoiceOfAnswerDto>(interactiveId),
-            Interactive.ProgramWriting => await _interactiveRepository.DeleteInteractiveByIdAsync<ProgramWritingDto>(interactiveId),
-            Interactive.WritingOfAnswer => await _interactiveRepository.DeleteInteractiveByIdAsync<WritingOfAnswerDto>(interactiveId),
+            InteractiveType.CheckList => await _interactiveRepository.DeleteInteractiveByIdAsync<CheckListDto>(interactiveId),
+            InteractiveType.ChoiceOfAnswer => await _interactiveRepository.DeleteInteractiveByIdAsync<ChoiceOfAnswerDto>(interactiveId),
+            InteractiveType.ProgramWriting => await _interactiveRepository.DeleteInteractiveByIdAsync<ProgramWritingDto>(interactiveId),
+            InteractiveType.WritingOfAnswer => await _interactiveRepository.DeleteInteractiveByIdAsync<WritingOfAnswerDto>(interactiveId),
             _ => new (new ArgumentException("Invalid interactive type."))
         };
     }
 
-    private Interactive GetInteractive(UpsertInteractiveRequest request)
+    private InteractiveType GetInteractive(UpsertInteractiveRequest request)
     {
-        if (request.UpsertCheckListRequest != null)
-            return Interactive.CheckList;
-        if (request.UpsertChoiceOfAnswerRequest != null)
-            return Interactive.ChoiceOfAnswer;
-        if (request.UpsertProgramWritingRequest != null)
-            return Interactive.ProgramWriting;
-        if (request.UpsertWritingOfAnswerRequest != null)
-            return Interactive.WritingOfAnswer;
+        if (request.UpsertCheckList != null)
+            return InteractiveType.CheckList;
+        if (request.UpsertChoiceOfAnswer != null)
+            return InteractiveType.ChoiceOfAnswer;
+        if (request.UpsertProgramWriting != null)
+            return InteractiveType.ProgramWriting;
+        if (request.UpsertWritingOfAnswer != null)
+            return InteractiveType.WritingOfAnswer;
         
         throw new NotImplementedException("Interactive body not implemented");
     }
     
-    private Interactive GetInteractiveReply(UpsertInteractiveReplyRequest request)
+    private InteractiveType GetInteractiveReply(UpsertInteractiveReplyRequest request)
     {
-        if (request.ReplyCheckList != null)
-            return Interactive.CheckList;
-        if (request.ReplyAnswerChoice != null)
-            return Interactive.ChoiceOfAnswer;
-        if (request.ReplyProgramWriting != null)
-            return Interactive.ProgramWriting;
-        if (request.ReplyWritingOfAnswer != null)
-            return Interactive.WritingOfAnswer;
+        if (request.UpsertReplyCheckList != null)
+            return InteractiveType.CheckList;
+        if (request.UpsertReplyAnswerChoice != null)
+            return InteractiveType.ChoiceOfAnswer;
+        if (request.UpsertReplyProgramWriting != null)
+            return InteractiveType.ProgramWriting;
+        if (request.UpsertReplyWritingOfAnswer != null)
+            return InteractiveType.WritingOfAnswer;
         
         throw new NotImplementedException("Interactive body not implemented");
+    }
+
+    /// <summary>
+    /// Такая сложная структура, потому что необходимо вернуть именно lastInteractive, а не lastInteractiveDto
+    /// не производя лишних сериализаций
+    /// </summary>
+    /// <param name="interactiveId"></param>
+    /// <param name="getLastInteractiveFunc"></param>
+    /// <param name="upsertFunc"></param>
+    /// <typeparam name="TInteractiveDto"></typeparam>
+    /// <typeparam name="TLastInteractiveDto"></typeparam>
+    /// <returns></returns>
+    private async Task<OperationResult<LastInteractiveByIdPublic>> UpsertLastInteractiveAsync<TInteractiveDto,TLastInteractiveDto>(
+        int interactiveId,
+        Func<TInteractiveDto,  LastInteractiveByIdPublic> getLastInteractiveFunc,
+        Func<LastInteractiveByIdPublic, Task<OperationResult<TLastInteractiveDto>>> upsertFunc)
+    where TInteractiveDto: class, IHaveId
+    {
+        var interactiveOperation = await _interactiveRepository.GetInteractiveByIdAsync<TInteractiveDto>(interactiveId);
+            if(!interactiveOperation.Success)
+                return new(interactiveOperation);
+        
+        var lastInteractive = getLastInteractiveFunc(interactiveOperation.Value);
+
+        OperationResult<LastInteractiveByIdPublic> lastInteractiveByIdPublic = null;
+        await upsertFunc(lastInteractive)
+            .InvokeOnErrorAsync(operationResult=>lastInteractiveByIdPublic = new (operationResult))
+            .InvokeOnSuccessAsync(_=>lastInteractiveByIdPublic = new (lastInteractive));
+
+        return lastInteractiveByIdPublic ?? new OperationResult<LastInteractiveByIdPublic>();
     }
     
      void LogChoiceOfAnswerAsync(LastChoiceOfAnswerDto dto) =>
          _interactiveRepository.InsertInteractiveAsync(() => new LogChoiceOfAnswerDto
         {
-            InteractiveId = dto.Id,
+            InteractiveId = dto.InteractiveId,
             UserId = dto.UserId,
             LogDate = DateTimeOffset.Now,
             SuccessAnswersJsonBoolArray = dto.SuccessAnswersJsonBoolArray,
@@ -295,7 +321,7 @@ public class InteractiveManager
      void LogProgramWritingAsync(LastProgramWritingDto dto) =>
          _interactiveRepository.InsertInteractiveAsync(() => new LogProgramWritingDto()
          {
-             InteractiveId = dto.Id,
+             InteractiveId = dto.InteractiveId,
              UserId = dto.UserId,
              LogDate = DateTimeOffset.Now,
              Code = dto.Code,
@@ -305,21 +331,10 @@ public class InteractiveManager
      void LogWritingOfAnswerAsync(LastWritingOfAnswerDto dto) =>
          _interactiveRepository.InsertInteractiveAsync(() => new LogWritingOfAnswerDto()
          {
-             InteractiveId = dto.Id,
+             InteractiveId = dto.InteractiveId,
              UserId = dto.UserId,
              LogDate = DateTimeOffset.Now,
              Success = dto.Success,
              Answer = dto.Answer
          }).Forget();
-    
-    private string ValidateChoiceOfAnswer(UpsertReplyAnswerChoiceRequest request, ChoiceOfAnswerPublic solve) =>
-        JsonConvert.SerializeObject(request.Answers.Zip(solve.Answers,
-            (reply, answer) => reply == answer).ToArray());
-
-    // TODO разработка сервиса под компиляцию и запуск кода
-    private bool ValidateProgramWriting(UpsertReplyProgramWritingRequest request) =>
-        request.Code.Contains("success");
-
-    private bool ValidateWritingOfAnswer(UpsertReplyWritingOfAnswerRequest request, WritingOfAnswerPublic solve) =>
-        request.Answer.Equals(solve.Answer, StringComparison.CurrentCultureIgnoreCase);
 }

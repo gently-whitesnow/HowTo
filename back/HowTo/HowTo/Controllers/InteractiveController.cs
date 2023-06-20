@@ -16,6 +16,16 @@ public class InteractiveController : Controller
     {
         _interactiveManager = interactiveManager;
     }
+    
+    [HttpGet]
+    [Route("api/interactive/{courseId}/{articleId}")]
+    [ValidateModelState]
+    public Task<IActionResult> GetInteractiveContentAsync([Required] [FromRoute] int courseId,
+        [Required] [FromRoute] int articleId)
+    {
+        var user = HttpContext.GetUser();
+        return _interactiveManager.GetInteractiveAsync(courseId, articleId, user).AsActionResultAsync();
+    }
 
     /// <summary>
     /// Добавление/обновление интерактива
@@ -41,21 +51,11 @@ public class InteractiveController : Controller
     }
 
     [HttpDelete]
-    [Route("api/interactive/{interactive}/{interactiveId}")]
+    [Route("api/interactive/{interactiveType}/{interactiveId}")]
     [ValidateModelState]
-    public Task<IActionResult> DeleteInteractiveAsync([Required] [FromRoute] Interactive interactive,
+    public Task<IActionResult> DeleteInteractiveAsync([Required] [FromRoute] InteractiveType interactiveType,
         [Required] [FromRoute] int interactiveId)
     {
-        return _interactiveManager.DeleteInteractiveAsync(interactive, interactiveId).AsActionResultAsync();
-    }
-
-    [HttpGet]
-    [Route("api/articles/{courseId}/{articleId}")]
-    [ValidateModelState]
-    public Task<IActionResult> GetInteractiveContentAsync([Required] [FromRoute] int courseId,
-        [Required] [FromRoute] int articleId)
-    {
-        var user = HttpContext.GetUser();
-        return _interactiveManager.GetInteractiveAsync(courseId, articleId, user).AsActionResultAsync();
+        return _interactiveManager.DeleteInteractiveAsync(interactiveType, interactiveId).AsActionResultAsync();
     }
 }

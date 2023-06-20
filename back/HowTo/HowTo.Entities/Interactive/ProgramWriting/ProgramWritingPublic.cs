@@ -2,7 +2,7 @@ using HowTo.Entities.Interactive.Base;
 
 namespace HowTo.Entities.Interactive.ProgramWriting;
 
-public class ProgramWritingPublic : InteractiveBase
+public class ProgramWritingPublic : InteractivePublicBase
 {
     public ProgramWritingPublic(ProgramWritingDto dto, bool isAuthor = true)
     {
@@ -12,6 +12,7 @@ public class ProgramWritingPublic : InteractiveBase
         Description = dto.Description;
         Code = dto.Code;
         Output = isAuthor ? dto.Output : null;
+        InteractiveType = InteractiveType.ProgramWriting;
     }
 
     public string Code { get; set; }

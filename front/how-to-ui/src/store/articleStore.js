@@ -11,12 +11,6 @@ class ArticleStore {
     });
   }
 
-  isLoading = false;
-
-  setIsLoading = (value) => {
-    this.isLoading = value;
-  };
-
   articleActionError = [];
 
   setArticleActionError = (error) => {

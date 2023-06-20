@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace HowTo.Entities.Interactive.CheckList;
 
-public class CheckListPublic : InteractiveBase
+public class CheckListPublic : InteractivePublicBase
 {
     public CheckListPublic(CheckListDto dto)
     {
@@ -12,6 +12,7 @@ public class CheckListPublic : InteractiveBase
         CourseId = dto.CourseId;
         Description = dto.Description;
         Clauses = JsonConvert.DeserializeObject<string[]>(dto.ClausesJsonStringArray);
+        InteractiveType = InteractiveType.CheckList;
     }
-    public string[] Clauses { get; set; }
+    public string[] Clauses { get; init; }
 }

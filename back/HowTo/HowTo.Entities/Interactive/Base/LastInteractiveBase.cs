@@ -1,16 +1,13 @@
 using System;
-using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace HowTo.Entities.Interactive.Base;
 
+[PrimaryKey(nameof(InteractiveId), nameof(CourseId), nameof(ArticleId), nameof(UserId))]
 public class LastInteractiveBase
 {
-    [Key]
-    [JsonIgnore]
-    public int Id { get; set; }
+    public int InteractiveId { get; set; }
     public int CourseId { get; set; }
     public int ArticleId { get; set; }
-
     public Guid UserId { get; set; }
 }

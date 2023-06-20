@@ -1,9 +1,9 @@
 namespace HowTo.Entities.Interactive;
 
-public enum Interactive
+public enum InteractiveType
 {
-    ChoiceOfAnswer,
-    WritingOfAnswer,
     CheckList,
-    ProgramWriting
+    ChoiceOfAnswer,
+    ProgramWriting,
+    WritingOfAnswer,
 }
