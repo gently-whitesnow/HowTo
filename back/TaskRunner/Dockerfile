@@ -1,10 +1,18 @@
+FROM rust:1.67 as build
+
+WORKDIR /build
+
+COPY . .
+
 FROM ubuntu:latest
 
 RUN apt-get install -y \
     python3 \
     clang \
     clang++ \
-    mono-complete
+    mono-complete \
+    build-essential \
+    curl
 
 COPY ./task_server.py /
 

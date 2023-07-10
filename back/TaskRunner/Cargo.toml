@@ -1,0 +1,9 @@
+[package]
+name = "task_runner"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+hyper = { version = "0.14.27", features = ["full"] }
+tokio = { version = "1.29.1", features = ["full"] }
+http-body-util = "0.1.0-rc.2"
