@@ -7,7 +7,6 @@ import {
   CourseLeftSide,
   CoursePageWrapper,
   CourseRightSide,
-  IconButtonsWrapper,
 } from "./CoursePage.styles";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../store";
@@ -21,6 +20,7 @@ import theme from "../../theme";
 import ErrorLineHandler from "../common/ErrorLineHandler/ErrorLineHandler";
 import Textarea from "../common/Textarea/Textarea";
 import ImageButton from "./ImageButton/ImageButton";
+import { IconButtonsWrapper } from "../common/EditWidget/EditWidget.styles";
 
 const CoursePage = () => {
   const imageInputRef = useRef(null);

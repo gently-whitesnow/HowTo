@@ -8,17 +8,12 @@ import {
 } from "./ArticleButton.styles";
 import { observer } from "mobx-react-lite";
 import { useNavigate } from "react-router";
-import IconButton from "../../common/IconButton/IconButton";
-import { ReactComponent as IconEdit } from "../../../icons/pen-edit16.svg";
-import { ReactComponent as IconCheck } from "../../../icons/check16.svg";
-import { ReactComponent as IconTrash } from "../../../icons/trash16.svg";
-import theme from "../../../theme";
 import { useRef, useState } from "react";
-import { IconButtonsWrapper } from "../CoursePage.styles";
 import Textarea from "../../common/Textarea/Textarea";
 import ErrorLineHandler from "../../common/ErrorLineHandler/ErrorLineHandler";
 import FileUploader from "../FileUploader/FileUploader";
 import { useEffect } from "react";
+import EditWidget from "../../common/EditWidget/EditWidget";
 
 const ArticleButton = (props) => {
   const fileInputRef = useRef(null);
@@ -34,7 +29,7 @@ const ArticleButton = (props) => {
   }, [props.article?.title]);
 
   const navigate = useNavigate();
-  const onClickHandler = () => {
+  const onArticleClickHandler = () => {
     if (isArticleEditing || props.article?.id === undefined) {
       return;
     }
@@ -74,7 +69,7 @@ const ArticleButton = (props) => {
     <ErrorLineHandler error={error} setActionError={setError}>
       <ArticleButtonWrapper ref={props.innerRef}>
         <ArticleButtonContent
-          onClick={onClickHandler}
+          onClick={onArticleClickHandler}
           color={props.color}
           isArticleEditing={isArticleEditing}
         >
@@ -99,54 +94,17 @@ const ArticleButton = (props) => {
           </ArticleToolsWrapper>
         </ArticleButtonContent>
         {props.article?.isAuthor ? (
-          isArticleEditing ? (
-            <>
-              <IconButtonsWithUploaderWrapper>
-                <FileUploader color={props.color} fileInputRef={fileInputRef} />
-                <IconButtonsWrapper>
-                  <IconButton
-                    color={theme.colors.green}
-                    onClick={onSaveClickHandler}
-                    active
-                    size={"30px"}
-                    disabled={props.isLoading}
-                  >
-                    <IconCheck />
-                  </IconButton>
-                  <IconButton
-                    color={theme.colors.red}
-                    onClick={onDeleteClickHandler}
-                    active
-                    size={"30px"}
-                    disabled={props.isLoading}
-                  >
-                    <IconTrash />
-                  </IconButton>
-                </IconButtonsWrapper>
-              </IconButtonsWithUploaderWrapper>
-              <IconButtonsWrapper>
-                <IconButton
-                  color={props.color}
-                  onClick={onEditClickHandler}
-                  size={"30px"}
-                  disabled={props.isLoading}
-                >
-                  <IconEdit />
-                </IconButton>
-              </IconButtonsWrapper>
-            </>
-          ) : (
-            <IconButtonsWrapper>
-              <IconButton
-                color={props.color}
-                onClick={onEditClickHandler}
-                size={"30px"}
-                disabled={props.isLoading}
-              >
-                <IconEdit />
-              </IconButton>
-            </IconButtonsWrapper>
-          )
+          <>
+            {isArticleEditing ? (
+              <FileUploader color={props.color} fileInputRef={fileInputRef} />
+            ) : null}
+            <EditWidget onEditClickHandler={onEditClickHandler}
+            onSaveClickHandler={onSaveClickHandler}
+            onDeleteClickHandler={onDeleteClickHandler}
+            color={props.color}
+            isLoading={props.isLoading}
+            isEditing={isArticleEditing}/>
+          </>
         ) : null}
       </ArticleButtonWrapper>
     </ErrorLineHandler>

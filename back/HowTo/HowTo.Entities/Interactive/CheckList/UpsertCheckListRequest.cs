@@ -4,5 +4,5 @@ namespace HowTo.Entities.Interactive.CheckList;
 
 public class UpsertCheckListRequest
 {
-    [Required] public string[] Clauses { get; set; }
+    public string[] Clauses { get; set; }
 }

@@ -58,13 +58,6 @@ export const CourseHeaderWrapper = styled.div`
   display: flex;
 `;
 
-export const IconButtonsWrapper = styled.div`
-  height: 100%;
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-`;
-
 export const AuthorsWrapper = styled.div`
   opacity: 0.6;
   color: ${(props) => props.color};

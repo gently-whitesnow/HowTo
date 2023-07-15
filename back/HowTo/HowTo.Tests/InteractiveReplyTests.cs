@@ -38,39 +38,42 @@ public class InteractiveReplyTests : BaseTestsWithArtefacts
         {
             Answer = "hello world"
         });
-        
+
+        var checkListReply = new UpsertReplyCheckListRequest()
+        {
+            Clauses = new bool?[] { true, false, true }
+        };
         await InitInteractiveReplyAsync(articleOperation.Value.CourseId,articleOperation.Value.Id,checkListOperation.Value.CheckList.Id,
-            checkListRequest: new UpsertReplyCheckListRequest
+            checkListRequest: checkListReply);
+
+        var choiceOfAnswerReply = new UpsertReplyAnswerChoiceRequest
         {
-            Clauses = new [] {true,false, true}
-        });
+            Answers = new[] { false, false, true }
+        };
         await InitInteractiveReplyAsync(articleOperation.Value.CourseId,articleOperation.Value.Id,choiceOfAnswerOperation.Value.ChoiceOfAnswer.Id,
-            choiceOfAnswerRequest: new UpsertReplyAnswerChoiceRequest
-        {
-            Answers = new [] {false, false, true}
-        });
-        await InitInteractiveReplyAsync(articleOperation.Value.CourseId,articleOperation.Value.Id,programWritingOperation.Value.ProgramWriting.Id,
-            programWritingRequest: new UpsertReplyProgramWritingRequest()
+            choiceOfAnswerRequest: choiceOfAnswerReply);
+
+        var programWritingReply = new UpsertReplyProgramWritingRequest
         {
             Code = "codeuser",
-        });
-        await InitInteractiveReplyAsync(articleOperation.Value.CourseId,articleOperation.Value.Id,writingOfAnswerOperation.Value.WritingOfAnswer.Id,
-            writingOfAnswerRequest: new UpsertReplyWritingOfAnswerRequest
+        };
+        await InitInteractiveReplyAsync(articleOperation.Value.CourseId,articleOperation.Value.Id,programWritingOperation.Value.ProgramWriting.Id,
+            programWritingRequest: programWritingReply);
+
+        var writingOfAnswerReply = new UpsertReplyWritingOfAnswerRequest
         {
             Answer = "answer from user"
-        });
+        };
+        await InitInteractiveReplyAsync(articleOperation.Value.CourseId,articleOperation.Value.Id,writingOfAnswerOperation.Value.WritingOfAnswer.Id,
+            writingOfAnswerRequest: writingOfAnswerReply);
 
         var interactiveOperation = await 
             _interactiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
                 FirstUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
-        Assert.NotNull(interactiveOperation.Value.LastInteractive.LastCheckList);
-        Assert.NotNull(interactiveOperation.Value.LastInteractive.LastChoiceOfAnswer);
-        Assert.NotNull(interactiveOperation.Value.LastInteractive.LastProgramWriting);
-        Assert.NotNull(interactiveOperation.Value.LastInteractive.LastWritingOfAnswer);
-        Assert.Single(interactiveOperation.Value.LastInteractive.LastCheckList);
-        Assert.Single(interactiveOperation.Value.LastInteractive.LastChoiceOfAnswer);
-        Assert.Single(interactiveOperation.Value.LastInteractive.LastProgramWriting);
-        Assert.Single(interactiveOperation.Value.LastInteractive.LastWritingOfAnswer);
+        Assert.True(interactiveOperation.Value.CheckList[0].UserClausesChecked.SequenceEqual(checkListReply.Clauses));
+        Assert.True(interactiveOperation.Value.ChoiceOfAnswer[0].UserAnswers.SequenceEqual(choiceOfAnswerReply.Answers));
+        Assert.True(interactiveOperation.Value.ProgramWriting[0].UserCode.Equals(programWritingReply.Code));
+        Assert.True(interactiveOperation.Value.WritingOfAnswer[0].UserAnswer.Equals(writingOfAnswerReply.Answer));
     }
     
     [Fact]
@@ -87,12 +90,12 @@ public class InteractiveReplyTests : BaseTestsWithArtefacts
         await InitInteractiveReplyAsync(articleOperation.Value.CourseId,articleOperation.Value.Id,initInteractiveOperation.Value.CheckList.Id,
             checkListRequest: new UpsertReplyCheckListRequest
             {
-                Clauses = new [] {true,false, true}
+                Clauses = new bool?[] {true,false, true}
             });
         
         var lastReply = new UpsertReplyCheckListRequest
         {
-            Clauses = new [] {true ,false, true}
+            Clauses = new bool?[] {true ,false, true}
         };
         await InitInteractiveReplyAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
             initInteractiveOperation.Value.CheckList.Id,
@@ -101,9 +104,8 @@ public class InteractiveReplyTests : BaseTestsWithArtefacts
         var interactiveOperation = await 
             _interactiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
                 FirstUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
-        Assert.NotNull(interactiveOperation.Value.LastInteractive.LastCheckList);
-        Assert.Single(interactiveOperation.Value.LastInteractive.LastCheckList);
-        Assert.True(lastReply.Clauses.SequenceEqual(interactiveOperation.Value.LastInteractive.LastCheckList[0].Clauses));
+        
+        Assert.True(lastReply.Clauses.SequenceEqual(interactiveOperation.Value.CheckList[0].UserClausesChecked));
     }
     
     [Fact]
@@ -116,7 +118,7 @@ public class InteractiveReplyTests : BaseTestsWithArtefacts
             Answers = new[] { true, true, false },
             Questions = new[] { "test1", "test2", "test3" }
         };
-
+    
         var initInteractiveOperation = await InitInteractiveAsync(articleOperation.Value, 
             choiceOfAnswerRequest: request);
         
@@ -141,10 +143,9 @@ public class InteractiveReplyTests : BaseTestsWithArtefacts
         var interactiveOperation = await 
             _interactiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
                 FirstUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
-        Assert.NotNull(interactiveOperation.Value.LastInteractive.LastChoiceOfAnswer);
-        Assert.Single(interactiveOperation.Value.LastInteractive.LastChoiceOfAnswer);
-        Assert.True(lastReply.Answers.SequenceEqual(interactiveOperation.Value.LastInteractive.LastChoiceOfAnswer[0].Answers));
-        Assert.True(successReply.Answers.SequenceEqual(interactiveOperation.Value.LastInteractive.LastChoiceOfAnswer[0].SuccessAnswers));
+        
+        Assert.True(lastReply.Answers.SequenceEqual(interactiveOperation.Value.ChoiceOfAnswer[0].UserAnswers));
+        Assert.True(successReply.Answers.SequenceEqual(interactiveOperation.Value.ChoiceOfAnswer[0].UserSuccessAnswers));
     }
     
     [Fact]
@@ -178,10 +179,8 @@ public class InteractiveReplyTests : BaseTestsWithArtefacts
         var interactiveOperation = await 
             _interactiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
                 FirstUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
-        Assert.NotNull(interactiveOperation.Value.LastInteractive.LastProgramWriting);
-        Assert.Single(interactiveOperation.Value.LastInteractive.LastProgramWriting);
-        Assert.Equal(lastReply.Code, interactiveOperation.Value.LastInteractive.LastProgramWriting[0].Code);
-        Assert.True(interactiveOperation.Value.LastInteractive.LastProgramWriting[0].Success);
+        Assert.Equal(lastReply.Code, interactiveOperation.Value.ProgramWriting[0].UserCode);
+        Assert.True(interactiveOperation.Value.ProgramWriting[0].UserSuccess);
     }
     
     [Fact]
@@ -215,10 +214,9 @@ public class InteractiveReplyTests : BaseTestsWithArtefacts
         var interactiveOperation = await 
             _interactiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
                 FirstUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
-        Assert.NotNull(interactiveOperation.Value.LastInteractive.LastWritingOfAnswer);
-        Assert.Single(interactiveOperation.Value.LastInteractive.LastWritingOfAnswer);
-        Assert.Equal(lastReply.Answer, interactiveOperation.Value.LastInteractive.LastWritingOfAnswer[0].Answer);
-        Assert.True(interactiveOperation.Value.LastInteractive.LastWritingOfAnswer[0].Success);
+
+        Assert.Equal(lastReply.Answer, interactiveOperation.Value.WritingOfAnswer[0].UserAnswer);
+        Assert.True(interactiveOperation.Value.WritingOfAnswer[0].UserSuccess);
     }
     
     [Fact]
@@ -268,13 +266,11 @@ public class InteractiveReplyTests : BaseTestsWithArtefacts
         var interactiveOperation = await 
             _interactiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
                 FirstUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
-        Assert.NotNull(interactiveOperation.Value.LastInteractive.LastWritingOfAnswer);
-        Assert.True(interactiveOperation.Value.LastInteractive.LastWritingOfAnswer.Length == 2);
+
+        Assert.Equal(firstLastReply.Answer, interactiveOperation.Value.WritingOfAnswer[0].UserAnswer);
+        Assert.True(interactiveOperation.Value.WritingOfAnswer[0].UserSuccess);
         
-        Assert.Equal(firstLastReply.Answer, interactiveOperation.Value.LastInteractive.LastWritingOfAnswer[0].Answer);
-        Assert.True(interactiveOperation.Value.LastInteractive.LastWritingOfAnswer[0].Success);
-        
-        Assert.Equal(secondLastReply.Answer, interactiveOperation.Value.LastInteractive.LastWritingOfAnswer[1].Answer);
-        Assert.False(interactiveOperation.Value.LastInteractive.LastWritingOfAnswer[1].Success);
+        Assert.Equal(secondLastReply.Answer, interactiveOperation.Value.WritingOfAnswer[1].UserAnswer);
+        Assert.False(interactiveOperation.Value.WritingOfAnswer[1].UserSuccess);
     }
 }

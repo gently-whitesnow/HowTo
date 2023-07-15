@@ -37,20 +37,20 @@ class CourseStore {
     this.articles = course.articles?.map((a) => {
       return {
         id: a.id,
-        courseId: a.course_id,
+        courseId: a.courseId,
         title: a.title,
-        createdAt: a.created_at,
-        updatedAt: a.updated_at,
-        author: { userId: a.author?.user_id, name: a.author?.name },
-        isAuthor: a.is_author,
-        isViewed: a.is_viewed,
+        createdAt: a.createdAt,
+        updatedAt: a.updatedAt,
+        author: { userId: a.author?.userId, name: a.author?.name },
+        isAuthor: a.isAuthor,
+        isViewed: a.isViewed,
       };
     });
     this.id = course.id;
-    this.createdAt = course.created_at;
-    this.updatedAt = course.updated_at;
+    this.createdAt = course.createdAt;
+    this.updatedAt = course.updatedAt;
     this.contributors = course.contributors;
-    this.isAuthor = course.is_author;
+    this.isAuthor = course.isAuthor;
     this.image = setFile(course.files?.shift());
   };
 
@@ -59,12 +59,12 @@ class CourseStore {
 
     this.articles.push({
       id: article.id,
-      courseId: article.course_id,
+      courseId: article.courseId,
       title: article.title,
-      createdAt: article.created_at,
-      updatedAt: article.updated_at,
-      author: { userId: article.author?.user_id, name: article.author?.name },
-      isAuthor: article.is_author,
+      createdAt: article.createdAt,
+      updatedAt: article.updatedAt,
+      author: { userId: article.author?.userId, name: article.author?.name },
+      isAuthor: article.isAuthor,
     });
   };
 
@@ -140,8 +140,8 @@ class CourseStore {
       .then(({ data }) => {
         this.rootStore.stateStore.setIsLoading(false);
         this.id = data.id;
-        this.createdAt = data.created_at;
-        this.updatedAt = data.updated_at;
+        this.createdAt = data.createdAt;
+        this.updatedAt = data.updatedAt;
         this.setIsCourseEditing(false);
         callback(data.id);
       })

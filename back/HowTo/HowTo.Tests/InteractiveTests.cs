@@ -42,10 +42,10 @@ public class InteractiveTests : BaseTestsWithArtefacts
         var interactiveOperation = await 
             _interactiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
                 FirstUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
-        Assert.Single(interactiveOperation.Value.Interactive.CheckList);
-        Assert.Single(interactiveOperation.Value.Interactive.ChoiceOfAnswer);
-        Assert.Single(interactiveOperation.Value.Interactive.ProgramWriting);
-        Assert.Single(interactiveOperation.Value.Interactive.WritingOfAnswer);
+        Assert.Single(interactiveOperation.Value.CheckList);
+        Assert.Single(interactiveOperation.Value.ChoiceOfAnswer);
+        Assert.Single(interactiveOperation.Value.ProgramWriting);
+        Assert.Single(interactiveOperation.Value.WritingOfAnswer);
     }
     
     [Fact]
@@ -69,9 +69,9 @@ public class InteractiveTests : BaseTestsWithArtefacts
         var interactiveOperation = await 
             _interactiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
                 FirstUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
-        Assert.True(interactiveOperation.Value.Interactive.CheckList.Length == 2);
-        Assert.True(firstRequest.Clauses.SequenceEqual(interactiveOperation.Value.Interactive.CheckList[0].Clauses));
-        Assert.True(secondRequest.Clauses.SequenceEqual(interactiveOperation.Value.Interactive.CheckList[1].Clauses));
+        Assert.True(interactiveOperation.Value.CheckList.Length == 2);
+        Assert.True(firstRequest.Clauses.SequenceEqual(interactiveOperation.Value.CheckList[0].Clauses));
+        Assert.True(secondRequest.Clauses.SequenceEqual(interactiveOperation.Value.CheckList[1].Clauses));
     }
     
     [Fact]
@@ -99,12 +99,12 @@ public class InteractiveTests : BaseTestsWithArtefacts
             _interactiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
                 FirstUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
         
-        Assert.True(interactiveOperation.Value.Interactive.ChoiceOfAnswer.Length == 2);
-        Assert.True(firstRequest.Questions.SequenceEqual(interactiveOperation.Value.Interactive.ChoiceOfAnswer[0].Questions));
-        Assert.True(firstRequest.Answers.SequenceEqual(interactiveOperation.Value.Interactive.ChoiceOfAnswer[0].Answers));
+        Assert.True(interactiveOperation.Value.ChoiceOfAnswer.Length == 2);
+        Assert.True(firstRequest.Questions.SequenceEqual(interactiveOperation.Value.ChoiceOfAnswer[0].Questions));
+        Assert.True(firstRequest.Answers.SequenceEqual(interactiveOperation.Value.ChoiceOfAnswer[0].Answers));
 
-        Assert.True(secondRequest.Questions.SequenceEqual(interactiveOperation.Value.Interactive.ChoiceOfAnswer[1].Questions));
-        Assert.True(secondRequest.Answers.SequenceEqual(interactiveOperation.Value.Interactive.ChoiceOfAnswer[1].Answers));
+        Assert.True(secondRequest.Questions.SequenceEqual(interactiveOperation.Value.ChoiceOfAnswer[1].Questions));
+        Assert.True(secondRequest.Answers.SequenceEqual(interactiveOperation.Value.ChoiceOfAnswer[1].Answers));
     }
     
     [Fact]
@@ -132,12 +132,12 @@ public class InteractiveTests : BaseTestsWithArtefacts
             _interactiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
                 FirstUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
         
-        Assert.True(interactiveOperation.Value.Interactive.ProgramWriting.Length == 2);
-        Assert.Equal(firstRequest.Code, interactiveOperation.Value.Interactive.ProgramWriting[0].Code);
-        Assert.Equal(firstRequest.Output, interactiveOperation.Value.Interactive.ProgramWriting[0].Output);
+        Assert.True(interactiveOperation.Value.ProgramWriting.Length == 2);
+        Assert.Equal(firstRequest.Code, interactiveOperation.Value.ProgramWriting[0].Code);
+        Assert.Equal(firstRequest.Output, interactiveOperation.Value.ProgramWriting[0].Output);
 
-        Assert.Equal(secondRequest.Code, interactiveOperation.Value.Interactive.ProgramWriting[1].Code);
-        Assert.Equal(secondRequest.Output, interactiveOperation.Value.Interactive.ProgramWriting[1].Output);
+        Assert.Equal(secondRequest.Code, interactiveOperation.Value.ProgramWriting[1].Code);
+        Assert.Equal(secondRequest.Output, interactiveOperation.Value.ProgramWriting[1].Output);
     }
     
     [Fact]
@@ -164,12 +164,12 @@ public class InteractiveTests : BaseTestsWithArtefacts
             _interactiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
                 FirstUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
         
-        Assert.True(interactiveOperation.Value.Interactive.WritingOfAnswer.Length == 2);
+        Assert.True(interactiveOperation.Value.WritingOfAnswer.Length == 2);
 
-        Assert.Equal(firstRequest.Answer, interactiveOperation.Value.Interactive.WritingOfAnswer[0].Answer);
-        Assert.Equal(description, interactiveOperation.Value.Interactive.WritingOfAnswer[0].Description);
-        Assert.Equal(secondRequest.Answer, interactiveOperation.Value.Interactive.WritingOfAnswer[1].Answer);
-        Assert.Equal(description, interactiveOperation.Value.Interactive.WritingOfAnswer[1].Description);
+        Assert.Equal(firstRequest.Answer, interactiveOperation.Value.WritingOfAnswer[0].Answer);
+        Assert.Equal(description, interactiveOperation.Value.WritingOfAnswer[0].Description);
+        Assert.Equal(secondRequest.Answer, interactiveOperation.Value.WritingOfAnswer[1].Answer);
+        Assert.Equal(description, interactiveOperation.Value.WritingOfAnswer[1].Description);
     }
     
     [Fact]
@@ -193,8 +193,8 @@ public class InteractiveTests : BaseTestsWithArtefacts
         var interactiveOperation = await 
             _interactiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
                 FirstUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
-        Assert.True(interactiveOperation.Value.Interactive.CheckList.Length == 1);
-        Assert.True(secondRequest.Clauses.SequenceEqual(interactiveOperation.Value.Interactive.CheckList[0].Clauses));
+        Assert.True(interactiveOperation.Value.CheckList.Length == 1);
+        Assert.True(secondRequest.Clauses.SequenceEqual(interactiveOperation.Value.CheckList[0].Clauses));
     }
     
     [Fact]
@@ -214,15 +214,15 @@ public class InteractiveTests : BaseTestsWithArtefacts
             _interactiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
                 FirstUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
         
-        Assert.True(interactiveOperationByAuthor.Value.Interactive.ChoiceOfAnswer.Length == 1);
-        Assert.NotNull(interactiveOperationByAuthor.Value.Interactive.ChoiceOfAnswer[0].Answers);
-        Assert.True(request.Answers.SequenceEqual(interactiveOperationByAuthor.Value.Interactive.ChoiceOfAnswer[0].Answers));
+        Assert.True(interactiveOperationByAuthor.Value.ChoiceOfAnswer.Length == 1);
+        Assert.NotNull(interactiveOperationByAuthor.Value.ChoiceOfAnswer[0].Answers);
+        Assert.True(request.Answers.SequenceEqual(interactiveOperationByAuthor.Value.ChoiceOfAnswer[0].Answers));
         
         var interactiveOperationByAnotherUser = await 
             _interactiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
                 SecondUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
         
-        Assert.True(interactiveOperationByAnotherUser.Value.Interactive.ChoiceOfAnswer.Length == 1);
-        Assert.Null(interactiveOperationByAnotherUser.Value.Interactive.ChoiceOfAnswer[0].Answers);
+        Assert.True(interactiveOperationByAnotherUser.Value.ChoiceOfAnswer.Length == 1);
+        Assert.Null(interactiveOperationByAnotherUser.Value.ChoiceOfAnswer[0].Answers);
     }
 }

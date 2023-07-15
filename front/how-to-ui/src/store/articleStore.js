@@ -22,13 +22,13 @@ class ArticleStore {
   setArticleData = (data) => {
     this.article= {
         id: data.article.id,
-        courseId: data.article.course_id,
+        courseId: data.article.courseId,
         title: data.article.title,
-        createdAt: data.article.created_at,
-        updatedAt: data.article.updated_at,
-        author: { userId: data.article.author?.user_id, name: data.article.author?.name },
-        isAuthor: data.article.is_author,
-        isViewed: data.article.is_viewed,
+        createdAt: data.article.createdAt,
+        updatedAt: data.article.updatedAt,
+        author: { userId: data.article.author?.userId, name: data.article.author?.name },
+        isAuthor: data.article.isAuthor,
+        isViewed: data.article.isViewed,
       }
       this.setFiles(data.files)
   };

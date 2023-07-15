@@ -1,4 +1,5 @@
 import axios from "axios";
+import { camelizeKeys, decamelizeKeys , camelize} from "humps";
 
 export class Api {
   constructor() {
@@ -9,6 +10,33 @@ export class Api {
     this.client.defaults.headers["Access-Control-Allow-Origin"] = "*";
     this.client.defaults.withCredentials = true;
     this.client.timeout = 3000;
+
+    this.client.interceptors.response.use((response) => {
+      if (
+        response.data &&
+        response.headers["content-type"].includes("application/json")
+      ) {
+        response.data = camelizeKeys(response.data);
+      }
+
+      return response;
+    });
+
+    // Axios middleware to convert all api requests to snake_case
+    this.client.interceptors.request.use((config) => {
+      const newConfig = { ...config };
+      if (newConfig.headers["Content-Type"] === "multipart/form-data")
+        return newConfig;
+
+      if (config.params) {
+        newConfig.params = decamelizeKeys(config.params);
+      }
+
+      if (config.data) {
+        newConfig.data = decamelizeKeys(config.data);
+      }
+      return newConfig;
+    });
   }
 
   clientWrapper = (method, url, data, config = {}) => {
@@ -37,7 +65,11 @@ export class Api {
     formData.append("Title", title);
     formData.append("Description", description);
 
-    return this.clientWrapper("post", "api/courses", formData);
+    return this.clientWrapper("post", "api/courses", formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
   };
   deleteCourse = (id) => this.clientWrapper("delete", `api/courses/${id}`);
 
@@ -57,7 +89,11 @@ export class Api {
     formData.append("courseId", courseId);
     formData.append("title", title);
 
-    return this.clientWrapper("post", "api/articles", formData);
+    return this.clientWrapper("post", "api/articles", formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
   };
   deleteArticle = (courseId, articleId) =>
     this.clientWrapper("delete", `api/articles/${courseId}/${articleId}`);
@@ -83,33 +119,34 @@ export class Api {
   getInteractive = (courseId, articleId) =>
     this.clientWrapper("get", `api/interactive/${courseId}/${articleId}`);
 
-  upsertInteractive = (upsertRequest) => {
+  upsertInteractive = (upsertRequest) => 
     this.clientWrapper("post", `api/interactive`, {
-      interactive_id: upsertRequest.interactiveId,
-      course_id: upsertRequest.courseId,
-      article_id: upsertRequest.articleId,
+      interactiveId: upsertRequest.interactiveId,
+      courseId: upsertRequest.courseId,
+      articleId: upsertRequest.articleId,
       description: upsertRequest.description,
-      upsert_check_list: upsertRequest.upsertCheckList,
-      upsert_choice_of_answer: upsertRequest.upsertChoiceOfAnswer,
-      upsert_program_writing: upsertRequest.upsertProgramWriting,
-      upsert_writing_of_answer: upsertRequest.upsertWritingOfAnswer
+      upsertCheckList: upsertRequest.upsertCheckList,
+      upsertChoiceOfAnswer: upsertRequest.upsertChoiceOfAnswer,
+      upsertProgramWriting: upsertRequest.upsertProgramWriting,
+      upsertWritingOfAnswer: upsertRequest.upsertWritingOfAnswer,
     });
-  }
 
-  upsertInteractiveReply = (upsertRequest) => {
+  upsertInteractiveReply = (upsertRequest) => 
     this.clientWrapper("post", `api/interactive/reply`, {
-      interactive_id: upsertRequest.interactiveId,
-      course_id: upsertRequest.courseId,
-      article_id: upsertRequest.articleId,
-      upsert_reply_check_list: upsertRequest.upsertReplyCheckList,
-      upsert_reply_choice_of_answer: upsertRequest.upsertReplyChoiceOfAnswer,
-      upsert_reply_program_writing: upsertRequest.upsertReplyProgramWriting,
-      upsert_reply_writing_of_answer: upsertRequest.upsertReplyWritingOfAnswer
+      interactiveId: upsertRequest.interactiveId,
+      courseId: upsertRequest.courseId,
+      articleId: upsertRequest.articleId,
+      upsertReplyCheckList: upsertRequest.upsertReplyCheckList,
+      upsertReplyChoiceOfAnswer: upsertRequest.upsertReplyChoiceOfAnswer,
+      upsertReplyProgramWriting: upsertRequest.upsertReplyProgramWriting,
+      upsertReplyWritingOfAnswer: upsertRequest.upsertReplyWritingOfAnswer,
     });
-  }
 
   deleteInteractive = (interactiveType, interactiveId) =>
-    this.clientWrapper("delete", `api/interactive/${interactiveType}/${interactiveId}`);
+    this.clientWrapper(
+      "delete",
+      `api/interactive/${interactiveType}/${interactiveId}`
+    );
 }
 const api = new Api();
 

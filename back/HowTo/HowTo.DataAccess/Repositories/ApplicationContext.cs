@@ -1,7 +1,6 @@
 using HowTo.Entities.Article;
 using HowTo.Entities.Contributor;
 using HowTo.Entities.Course;
-using HowTo.Entities.Interactive.Base;
 using HowTo.Entities.Interactive.CheckList;
 using HowTo.Entities.Interactive.ChoiceOfAnswers;
 using HowTo.Entities.Interactive.ProgramWriting;
@@ -27,26 +26,21 @@ public class ApplicationContext : DbContext
     public DbSet<ContributorEntity> ContributorEntityContext { get; set; }
     public DbSet<ViewedEntity> UserViewEntityContext { get; set; }
 
-    #region Interactive
-    
     public DbSet<CheckListDto> CheckListContext { get; set; }
     public DbSet<ChoiceOfAnswerDto> ChoiceOfAnswerContext { get; set; }
     public DbSet<LogChoiceOfAnswerDto> LogChoiceOfAnswerContext { get; set; }
-    
+
     public DbSet<ProgramWritingDto> ProgramWritingContext { get; set; }
     public DbSet<LogProgramWritingDto> LogProgramWritingContext { get; set; }
-    
+
     public DbSet<WritingOfAnswerDto> WritingOfAnswerContext { get; set; }
     public DbSet<LogWritingOfAnswerDto> LogWritingOfAnswerContext { get; set; }
-    
+
     public DbSet<LastCheckListDto> LastCheckListContext { get; set; }
     public DbSet<LastChoiceOfAnswerDto> LastChoiceOfAnswerContext { get; set; }
     public DbSet<LastProgramWritingDto> LastProgramWritingContext { get; set; }
     public DbSet<LastWritingOfAnswerDto> LastWritingOfAnswerContext { get; set; }
-    
-    #endregion
-    
-    
+
     public ApplicationContext(IOptions<DbSettings> options)
     {
         _options = options.Value;
@@ -66,6 +60,7 @@ public class ApplicationContext : DbContext
                 command.CommandText = "PRAGMA read_uncommitted = false";
                 command.ExecuteNonQuery();
             }
+
             optionsBuilder.UseSqlite(connection);
         }
     }

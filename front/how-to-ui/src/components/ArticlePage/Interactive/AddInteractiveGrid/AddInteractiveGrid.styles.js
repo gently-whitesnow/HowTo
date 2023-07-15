@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const InteractiveHandlerWrapper = styled.div`
+export const AddInteractiveGridWrapper = styled.div`
   margin-top: 70px;
   margin-bottom: 20px;
   display: flex;

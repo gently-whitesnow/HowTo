@@ -16,8 +16,8 @@ public class UpsertInteractiveReplyRequest
     [Required] 
     public int ArticleId { get; set; }
     
-    public UpsertReplyCheckListRequest UpsertReplyCheckList { get; set; }
-    public UpsertReplyAnswerChoiceRequest UpsertReplyAnswerChoice { get; set; }
-    public UpsertReplyProgramWritingRequest UpsertReplyProgramWriting { get; set; }
-    public UpsertReplyWritingOfAnswerRequest UpsertReplyWritingOfAnswer { get; set; }
+    public UpsertReplyCheckListRequest? UpsertReplyCheckList { get; set; }
+    public UpsertReplyAnswerChoiceRequest? UpsertReplyAnswerChoice { get; set; }
+    public UpsertReplyProgramWritingRequest? UpsertReplyProgramWriting { get; set; }
+    public UpsertReplyWritingOfAnswerRequest? UpsertReplyWritingOfAnswer { get; set; }
 }

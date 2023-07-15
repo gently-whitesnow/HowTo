@@ -94,7 +94,7 @@ public abstract class BaseTestsWithArtefacts : BaseTests
             UpsertWritingOfAnswer = writingOfAnswerRequest
         }).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
     
-    protected Task<OperationResult<LastInteractiveByIdPublic>> InitInteractiveReplyAsync(
+    protected Task<OperationResult<InteractiveByIdPublic>> InitInteractiveReplyAsync(
         int courseId,
         int articleId,
         int interactiveId,

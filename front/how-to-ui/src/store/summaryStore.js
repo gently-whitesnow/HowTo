@@ -19,8 +19,8 @@ class SummaryStore {
     data.courses?.forEach((course) => {
       course.image = setFile(course.files?.shift());
     });
-    data.last_course.image = data.courses?.find(
-      (course) => course.id === data.last_course.id
+    data.lastCourse.image = data.courses?.find(
+      (course) => course.id === data.lastCourse.id
     ).image;
 
     this.summaryData = data;

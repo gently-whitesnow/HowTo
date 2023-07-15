@@ -26,15 +26,15 @@ const Tracker = () => {
 
   const navigate = useNavigate();
   const onClickHandler = () => {
-    navigate(`/${summaryData?.last_course?.id}`);
+    navigate(`/${summaryData?.lastCourse?.id}`);
   };
 
   let percent =
-    summaryData?.last_course?.articles_count == 0
+    summaryData?.lastCourse?.articlesCount == 0
       ? 0
       : Math.round(
-          (summaryData?.last_course?.user_approved_views /
-            summaryData?.last_course?.articles_count) *
+          (summaryData?.lastCourse?.userApprovedViews /
+            summaryData?.lastCourse?.articlesCount) *
             100
         );
 
@@ -44,8 +44,8 @@ const Tracker = () => {
         <LeftSide>
           <LeftSideImage color={currentColorTheme}>
             <ImageWrapper>
-              {summaryData?.last_course?.image ? (
-                <img src={summaryData?.last_course?.image}></img>
+              {summaryData?.lastCourse?.image ? (
+                <img src={summaryData?.lastCourse?.image}></img>
               ) : null}
             </ImageWrapper>
           </LeftSideImage>
@@ -53,9 +53,9 @@ const Tracker = () => {
         <RightSide>
           <RightUpSide>
             <Title color={currentColorTheme}>
-              {summaryData?.last_course?.title}
+              {summaryData?.lastCourse?.title}
             </Title>
-            <Description>{summaryData?.last_course?.description}</Description>
+            <Description>{summaryData?.lastCourse?.description}</Description>
           </RightUpSide>
           <RightBottomSide>
             <ContinueButton

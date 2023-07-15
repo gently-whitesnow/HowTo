@@ -19,9 +19,9 @@ public class LastCheckListPublic : LastInteractivePublicBase
         InteractiveId = dto.InteractiveId;
         CourseId = dto.CourseId;
         ArticleId = dto.ArticleId;
-        Clauses = JsonConvert.DeserializeObject<bool[]>(dto.CheckedClausesJsonBoolArray);
+        Clauses = JsonConvert.DeserializeObject<bool?[]>(dto.CheckedClausesJsonBoolArray);
         InteractiveType = InteractiveType.CheckList;
     }
     
-    public bool[] Clauses { get; set; }
+    public bool?[] Clauses { get; set; }
 }

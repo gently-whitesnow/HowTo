@@ -8,3 +8,20 @@ export function shuffle(arr) {
     }
     return arr;
   }
+
+  export const BoolArrayChanged = (initialArray, dynamicArray) => {
+    for (let index = 0; index < dynamicArray.length; index++) {
+      let initialValue = false;
+      if (initialArray.length > index)
+        initialValue = initialArray[index] ?? false;
+      if (initialValue !== (dynamicArray[index] ?? false)) return true;
+    }
+    return false;
+  };
+
+  export const CopyArray = (fromArray, toArray) => {
+    for (let i = 0; i < fromArray.length; i++) {
+      toArray[i] = fromArray[i]
+    }
+    return toArray;
+  };

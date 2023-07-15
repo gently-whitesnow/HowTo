@@ -26,7 +26,6 @@ namespace HowTo;
 
 public static class Startup
 {
-    #region WebApplicationBuilder
     public static WebApplicationBuilder SetUpHost(this WebApplicationBuilder builder)
     {
         builder.Host.UseContentRoot(Directory.GetCurrentDirectory());
@@ -64,9 +63,6 @@ public static class Startup
         return builder;
     }
 
-    #endregion
-    
-    #region ServiceCollection
     public static IServiceCollection WithOptions(this IServiceCollection services)
     {
         services.ConfigureByName<DbSettings>();
@@ -148,9 +144,6 @@ public static class Startup
         return services;
     }
 
-    #endregion
-    
-    #region WebApplication
     public static Task UseAppAsync(this WebApplication app)
     {
         const string healthCheckRoute = "/_internal/healthcheck";
@@ -180,6 +173,4 @@ public static class Startup
         
         return initTask;
     }
-
-    #endregion
 }

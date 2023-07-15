@@ -1,6 +1,5 @@
 import { makeAutoObservable, configure } from "mobx";
 import api from "../api/api";
-import { camelize } from "../helpers/caseHelper";
 
 class InteractiveStore {
   constructor(rootStore) {
@@ -13,7 +12,6 @@ class InteractiveStore {
   }
 
   interactive = undefined;
-  lastInteractive = undefined;
   newInteractive = undefined;
 
   isInteractiveChoise = false;
@@ -40,39 +38,35 @@ class InteractiveStore {
     };
   };
 
+  initInteractiveData = (interactiveData) => {
+    this.interactive = [];
+    if (interactiveData.checkList)
+      this.interactive = this.interactive.concat(interactiveData.checkList);
+    if (interactiveData.choiceOfAnswer)
+      this.interactive = this.interactive.concat(
+        interactiveData.choiceOfAnswer
+      );
+    if (interactiveData.programWriting)
+      this.interactive = this.interactive.concat(
+        interactiveData.programWriting
+      );
+    if (interactiveData.writingOfAnswer)
+      this.interactive = this.interactive.concat(
+        interactiveData.writingOfAnswer
+      );
+    console.log("interactive data", this.interactive);
+  };
+
   addInteractiveData = (interactiveData) => {
     if (this.interactive === undefined) this.interactive = [];
 
-    let data = camelize(
-      interactiveData.check_list ??
-        interactiveData.choice_of_answer ??
-        interactiveData.program_writing ??
-        interactiveData.writing_of_answer
-    );
+    let data =
+      interactiveData.checkList ??
+      interactiveData.choiceOfAnswer ??
+      interactiveData.programWriting ??
+      interactiveData.writingOfAnswer;
+
     this.interactive.push(data);
-  };
-
-  addLastInteractiveData = (lastInteractiveData) => {
-    if (this.lastInteractive === undefined) this.lastInteractive = [];
-
-    var lastData =
-      lastInteractiveData.last_check_list ??
-      lastInteractiveData.last_choice_of_answer ??
-      lastInteractiveData.last_program_writing ??
-      lastInteractiveData.last_writing_of_answer;
-    lastData = camelize(lastData);
-
-    let elementIndex = this.lastInteractive.findIndex(
-      (i) =>
-        lastData.interactiveId === i.interactiveId &&
-        lastData.CourseId === i.CourseId &&
-        lastData.ArticleId === i.ArticleId
-    );
-    if (elementIndex === -1) {
-      this.lastInteractive.push(lastData);
-    } else {
-      this.lastInteractive[elementIndex] = lastData;
-    }
   };
 
   getInteractive = (courseId, articleId) => {
@@ -82,8 +76,7 @@ class InteractiveStore {
       .getInteractive(courseId, articleId)
       .then(({ data }) => {
         this.rootStore.stateStore.setIsLoading(false);
-        this.interactive = data.interactive;
-        this.lastInteractive = data.lastInteractive;
+        this.initInteractiveData(data);
       })
       .catch((err) => {
         this.rootStore.stateStore.setIsLoading(false);
@@ -118,23 +111,21 @@ class InteractiveStore {
       });
   };
 
-  upsertInteractiveReply = (upsertRequest, errorCallback) => {
+  upsertInteractiveReply = (upsertRequest, callback) => {
     this.rootStore.stateStore.setIsLoading(true);
     api
       .upsertInteractiveReply(upsertRequest)
       .then(({ data }) => {
-        console.log(data);
         this.rootStore.stateStore.setIsLoading(false);
-
-        this.addLastInteractiveData(data);
-        errorCallback();
+        callback();
       })
       .catch((err) => {
+        console.error(err);
         this.rootStore.stateStore.setIsLoading(false);
         if (err.response?.status === 401) {
           this.rootStore.stateStore.setIsAuthorized(false);
         }
-        errorCallback(err.response?.data?.reason);
+        callback(err.response?.data?.reason ?? err);
       });
   };
 
@@ -145,10 +136,10 @@ class InteractiveStore {
       .then(({ data }) => {
         this.rootStore.stateStore.setIsLoading(false);
         this.interactive = this.interactive.filter(
-          (obj) => obj.interactiveId !== data.interactive_id
+          (obj) => obj.interactiveId !== data.interactiveId
         );
         this.lastInteractive = this.lastInteractive.filter(
-          (obj) => obj.interactiveId !== data.interactive_id
+          (obj) => obj.interactiveId !== data.interactiveId
         );
       })
       .catch((err) => {

@@ -55,7 +55,3 @@ export const ArticleToolsWrapper = styled.div`
   align-items: center;
   height: 100%;
 `;
-
-export const IconButtonsWithUploaderWrapper = styled.div`
-  display: flex;
-`;
