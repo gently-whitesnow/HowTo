@@ -11,18 +11,18 @@ namespace HowTo.DataAccess.Repositories;
 
 public class ArticleRepository
 {
-    private readonly ApplicationContext _db;
-
-    public ArticleRepository(ApplicationContext applicationContext)
+    private readonly IDbContextFactory<ApplicationContext> _dbContextFactory;
+    public ArticleRepository(IDbContextFactory<ApplicationContext> dbContextFactory)
     {
-        _db = applicationContext;
+        _dbContextFactory = dbContextFactory;
     }
 
     public async Task<OperationResult<ArticleDto>> UpsertArticleAsync(UpsertArticleRequest request, User user)
     {
         try
         {
-            var courseDto = await _db.CourseContext
+            using var db = _dbContextFactory.CreateDbContext();
+            var courseDto = await db.CourseContext
                 .Include(d => d.Articles)
                 .ThenInclude(a => a.Author)
                 .SingleOrDefaultAsync(c => c.Id == request.CourseId);
@@ -44,7 +44,7 @@ public class ArticleRepository
                     }
                 };
                 courseDto.Articles.Add(dto);
-                await _db.SaveChangesAsync();
+                await db.SaveChangesAsync();
                 return new(dto);
             }
             
@@ -57,7 +57,7 @@ public class ArticleRepository
             article.UpdatedAt = DateTime.UtcNow;
             article.Title = request.Title;
 
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync();
             return new(article);
         }
         catch (Exception ex)
@@ -70,7 +70,8 @@ public class ArticleRepository
     {
         try
         {
-            var articleDto = await _db.ArticleContext
+            using var db = _dbContextFactory.CreateDbContext();
+            var articleDto = await db.ArticleContext
                 .Include(d => d.Author)
                 .SingleOrDefaultAsync(a => a.Id == articleId && a.CourseId == courseId);
             if (articleDto == null)
@@ -88,8 +89,9 @@ public class ArticleRepository
     {
         try
         {
+            using var db = _dbContextFactory.CreateDbContext();
             var articleDto =
-                await _db.ArticleContext
+                await db.ArticleContext
                     .Include(d=>d.Author)
                     .SingleOrDefaultAsync(c => c.CourseId == courseId && c.Id == articleId);
             if (articleDto == null)
@@ -97,8 +99,8 @@ public class ArticleRepository
                 return new(Errors.ArticleNotFound(courseId, articleId));
             }
 
-            _db.ArticleContext.Remove(articleDto);
-            await _db.SaveChangesAsync();
+            db.ArticleContext.Remove(articleDto);
+            await db.SaveChangesAsync();
             return new(articleDto);
         }
         catch (Exception ex)

@@ -12,8 +12,8 @@ export const Checkbox = styled.div`
 `;
 
 export const Checkline = styled.div`
-  width: 100%;
-  margin-top: 10px;
+  margin-inline: 20px;
+  margin-top: 20px;
   display: flex;
   align-items: center;
 
@@ -24,12 +24,17 @@ export const Checkline = styled.div`
       background: ${(props) => props.color};
       opacity: 0.4;
     }
-    .right {
+    .checked {
       opacity: 1;
     }
   }
-  .right {
+  .checked {
     background: ${(props) => props.color};
     opacity: 0.8;
   }
+`;
+
+export const NewCheckline = styled.div`
+  width: 100%;
+  margin-top: 10px;
 `;

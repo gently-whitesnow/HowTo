@@ -13,18 +13,18 @@ namespace HowTo.DataAccess.Repositories;
 
 public class ViewRepository
 {
-    private readonly ApplicationContext _db;
-
-    public ViewRepository(ApplicationContext applicationContext)
+    private readonly IDbContextFactory<ApplicationContext> _dbContextFactory;
+    public ViewRepository(IDbContextFactory<ApplicationContext> dbContextFactory)
     {
-        _db = applicationContext;
+        _dbContextFactory = dbContextFactory;
     }
 
     public async Task<OperationResult<ViewDto>> UpsertViewAsync(int courseId, int articleId, User user)
     {
         try
         {
-            var viewDto = await _db.ViewContext
+            using var db = _dbContextFactory.CreateDbContext();
+            var viewDto = await db.ViewContext
                 .Include(d=>d.Viewers)
                 .SingleOrDefaultAsync(v => v.CourseId == courseId && v.ArticleId == articleId);
             if (viewDto == null)
@@ -35,7 +35,7 @@ public class ViewRepository
                     ArticleId = articleId,
                     Viewers = new List<UserGuid> { new(user.Id) }
                 };
-                await _db.ViewContext.AddAsync(viewDto);
+                await db.ViewContext.AddAsync(viewDto);
             }
             else
             {
@@ -43,7 +43,7 @@ public class ViewRepository
                     viewDto.Viewers.Add(new(user.Id));
             }
 
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync();
             return new(viewDto);
         }
         catch (Exception ex)
@@ -56,7 +56,8 @@ public class ViewRepository
     {
         try
         {
-            return new(await _db.ViewContext
+            using var db = _dbContextFactory.CreateDbContext();
+            return new(await db.ViewContext
                 .Include(d=>d.Viewers)
                 .Where(v => v.CourseId == courseId 
                             && (articleId == null || v.ArticleId == articleId))

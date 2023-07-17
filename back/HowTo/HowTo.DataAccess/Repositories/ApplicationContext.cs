@@ -17,7 +17,7 @@ namespace HowTo.DataAccess.Repositories;
 
 public class ApplicationContext : DbContext
 {
-    private DbSettings _options { get; set; }
+    private IOptions<DbSettings> _options { get; set; }
 
     public DbSet<ArticleDto> ArticleContext { get; set; }
     public DbSet<CourseDto> CourseContext { get; set; }
@@ -41,27 +41,27 @@ public class ApplicationContext : DbContext
     public DbSet<LastProgramWritingDto> LastProgramWritingContext { get; set; }
     public DbSet<LastWritingOfAnswerDto> LastWritingOfAnswerContext { get; set; }
 
-    public ApplicationContext(IOptions<DbSettings> options)
+    public ApplicationContext(IOptions<DbSettings> conOptions)
     {
-        _options = options.Value;
+        _options = conOptions;
     }
 
     // TODO подумать как еще можно многопоточно взаимодействовать с sqlite 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (!optionsBuilder.IsConfigured)
+        if (optionsBuilder.IsConfigured)
+            return;
+        
+        var connection = new SqliteConnection(_options.Value.DefaultConnection);
+        connection.Open();
+
+        // Установка уровня изоляции на SERIALIZABLE
+        using (var command = connection.CreateCommand())
         {
-            var connection = new SqliteConnection(_options.ConnectionString);
-            connection.Open();
-
-            // Установка уровня изоляции на SERIALIZABLE
-            using (var command = connection.CreateCommand())
-            {
-                command.CommandText = "PRAGMA read_uncommitted = false";
-                command.ExecuteNonQuery();
-            }
-
-            optionsBuilder.UseSqlite(connection);
+            command.CommandText = "PRAGMA read_uncommitted = false";
+            command.ExecuteNonQuery();
         }
+
+        optionsBuilder.UseSqlite(connection);
     }
 }

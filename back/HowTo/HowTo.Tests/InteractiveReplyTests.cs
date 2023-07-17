@@ -1,19 +1,13 @@
 using ATI.Services.Common.Extensions.OperationResult;
-using HowTo.Entities.Interactive;
 using HowTo.Entities.Interactive.CheckList;
 using HowTo.Entities.Interactive.ChoiceOfAnswers;
 using HowTo.Entities.Interactive.ProgramWriting;
 using HowTo.Entities.Interactive.WritingOfAnswer;
-using Newtonsoft.Json;
 
 namespace HowTo.Tests;
 
-public class InteractiveReplyTests : BaseTestsWithArtefacts
+public class InteractiveReplyTests : BaseTestsWithArtefacts<InteractiveReplyTests>
 {
-    public InteractiveReplyTests() : base("/Users/gently/Temp/InteractiveReplyTests-howto-test-content")
-    {
-    }
-    
     [Fact]
     private async void CreateAllInteractiveAndReplyAsync()
     {
@@ -68,7 +62,7 @@ public class InteractiveReplyTests : BaseTestsWithArtefacts
             writingOfAnswerRequest: writingOfAnswerReply);
 
         var interactiveOperation = await 
-            _interactiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
+            Startup.InteractiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
                 FirstUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
         Assert.True(interactiveOperation.Value.CheckList[0].UserClausesChecked.SequenceEqual(checkListReply.Clauses));
         Assert.True(interactiveOperation.Value.ChoiceOfAnswer[0].UserAnswers.SequenceEqual(choiceOfAnswerReply.Answers));
@@ -102,7 +96,7 @@ public class InteractiveReplyTests : BaseTestsWithArtefacts
             checkListRequest: lastReply);
         
         var interactiveOperation = await 
-            _interactiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
+            Startup.InteractiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
                 FirstUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
         
         Assert.True(lastReply.Clauses.SequenceEqual(interactiveOperation.Value.CheckList[0].UserClausesChecked));
@@ -141,7 +135,7 @@ public class InteractiveReplyTests : BaseTestsWithArtefacts
             choiceOfAnswerRequest: lastReply);
         
         var interactiveOperation = await 
-            _interactiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
+            Startup.InteractiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
                 FirstUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
         
         Assert.True(lastReply.Answers.SequenceEqual(interactiveOperation.Value.ChoiceOfAnswer[0].UserAnswers));
@@ -177,7 +171,7 @@ public class InteractiveReplyTests : BaseTestsWithArtefacts
             programWritingRequest: lastReply);
         
         var interactiveOperation = await 
-            _interactiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
+            Startup.InteractiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
                 FirstUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
         Assert.Equal(lastReply.Code, interactiveOperation.Value.ProgramWriting[0].UserCode);
         Assert.True(interactiveOperation.Value.ProgramWriting[0].UserSuccess);
@@ -212,7 +206,7 @@ public class InteractiveReplyTests : BaseTestsWithArtefacts
             writingOfAnswerRequest: lastReply);
         
         var interactiveOperation = await 
-            _interactiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
+            Startup.InteractiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
                 FirstUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
 
         Assert.Equal(lastReply.Answer, interactiveOperation.Value.WritingOfAnswer[0].UserAnswer);
@@ -264,7 +258,7 @@ public class InteractiveReplyTests : BaseTestsWithArtefacts
             writingOfAnswerRequest: secondLastReply);
         
         var interactiveOperation = await 
-            _interactiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
+            Startup.InteractiveManager.GetInteractiveAsync(articleOperation.Value.CourseId, articleOperation.Value.Id,
                 FirstUser).InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
 
         Assert.Equal(firstLastReply.Answer, interactiveOperation.Value.WritingOfAnswer[0].UserAnswer);

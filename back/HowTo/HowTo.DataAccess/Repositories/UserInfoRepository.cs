@@ -12,18 +12,18 @@ namespace HowTo.DataAccess.Repositories;
 
 public class UserInfoRepository
 {
-    private readonly ApplicationContext _db;
-
-    public UserInfoRepository(ApplicationContext applicationContext)
+    private readonly IDbContextFactory<ApplicationContext> _dbContextFactory;
+    public UserInfoRepository(IDbContextFactory<ApplicationContext> dbContextFactory)
     {
-        _db = applicationContext;
+        _dbContextFactory = dbContextFactory;
     }
 
     public async Task<OperationResult<UserUniqueInfoDto>> SetLastReadCourseIdAsync(User user, int courseId)
     {
         try
         {
-            var userInfoDto = await _db.UserUniqueInfoContext.FirstOrDefaultAsync(v => v.Id == user.Id);
+            using var db = _dbContextFactory.CreateDbContext();
+            var userInfoDto = await db.UserUniqueInfoContext.FirstOrDefaultAsync(v => v.Id == user.Id);
             if (userInfoDto == null)
             {
                 userInfoDto = new UserUniqueInfoDto
@@ -31,14 +31,14 @@ public class UserInfoRepository
                     Id = user.Id,
                     LastReadCourseId = courseId
                 };
-                await _db.UserUniqueInfoContext.AddAsync(userInfoDto);
+                await db.UserUniqueInfoContext.AddAsync(userInfoDto);
             }
             else
             {
                 userInfoDto.LastReadCourseId = courseId;
             }
 
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync();
             return new(userInfoDto);
         }
         catch (Exception ex)
@@ -51,7 +51,8 @@ public class UserInfoRepository
     {
         try
         {
-            var userInfoDto = await _db.UserUniqueInfoContext
+            using var db = _dbContextFactory.CreateDbContext();
+            var userInfoDto = await db.UserUniqueInfoContext
                 .Include(d=>d.ApprovedViewArticleIds)
                 .SingleOrDefaultAsync(v => v.Id == user.Id);
             
@@ -62,7 +63,7 @@ public class UserInfoRepository
                     Id = user.Id,
                     ApprovedViewArticleIds = new List<ViewedEntity> { new(request.CourseId, request.ArticleId)}
                 };
-                await _db.UserUniqueInfoContext.AddAsync(userInfoDto);
+                await db.UserUniqueInfoContext.AddAsync(userInfoDto);
             }
             else
             {
@@ -70,7 +71,7 @@ public class UserInfoRepository
                     userInfoDto.ApprovedViewArticleIds.Add(new(request.CourseId, request.ArticleId));
             }
 
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync();
             return new(userInfoDto);
         }
         catch (Exception ex)
@@ -83,7 +84,8 @@ public class UserInfoRepository
     {
         try
         {
-            var userInfoDto = await _db.UserUniqueInfoContext
+            using var db = _dbContextFactory.CreateDbContext();
+            var userInfoDto = await db.UserUniqueInfoContext
                 .Include(d=>d.ApprovedViewArticleIds)
                 .SingleOrDefaultAsync(u => u.Id == user.Id);
             if (userInfoDto == null)

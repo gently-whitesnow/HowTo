@@ -12,13 +12,8 @@ using Microsoft.AspNetCore.Http;
 
 namespace HowTo.Tests;
 
-public abstract class BaseTestsWithArtefacts : BaseTests
+public abstract class BaseTestsWithArtefacts<TestClassName> : BaseTests<TestClassName>
 {
-    protected BaseTestsWithArtefacts(string rootPath) : base(rootPath)
-    {
-    }
-
-
     protected User FirstUser = new User(Guid.NewGuid(), "FirstTestUserName");
     protected User SecondUser = new User(Guid.NewGuid(), "SecondTestUserName");
 
@@ -27,7 +22,7 @@ public abstract class BaseTestsWithArtefacts : BaseTests
         User? user = null,
         string? courseTitle = null,
         IFormFile? image = null) =>
-        _courseManager.UpsertCourseAsync(
+        Startup.CourseManager.UpsertCourseAsync(
                 new UpsertCourseRequest
                 {
                     CourseId = id,
@@ -44,7 +39,7 @@ public abstract class BaseTestsWithArtefacts : BaseTests
         string? courseTitle = null,
         IFormFile? image = null) =>
         InitCourseAsync(id, user, courseTitle, image)
-            .NextAsync(coursePublic => _courseManager.GetCourseWithFilesByIdAsync(coursePublic.Id, user ?? FirstUser));
+            .NextAsync(coursePublic => Startup.CourseManager.GetCourseWithFilesByIdAsync(coursePublic.Id, user ?? FirstUser));
 
 
     protected Task<OperationResult<ArticlePublic>> InitArticleAsync(
@@ -52,7 +47,7 @@ public abstract class BaseTestsWithArtefacts : BaseTests
         int? id = null,
         User? user = null,
         string? articleFileContent = null) =>
-        _articleManager.UpsertArticleAsync(new UpsertArticleRequest
+        Startup.ArticleManager.UpsertArticleAsync(new UpsertArticleRequest
             {
                 ArticleId = id,
                 CourseId = coursePublic.Id,
@@ -69,7 +64,7 @@ public abstract class BaseTestsWithArtefacts : BaseTests
         string? articleFileContent = null) =>
         InitArticleAsync(coursePublic, id,  user, articleFileContent)
             .NextAsync(article =>
-                _articleManager.GetArticleWithFileByIdAsync(article.CourseId, article.Id, user ?? FirstUser))
+                Startup.ArticleManager.GetArticleWithFileByIdAsync(article.CourseId, article.Id, user ?? FirstUser))
             .InvokeOnErrorAsync(operationResult => Assert.Fail(operationResult.DumpAllErrors()));
 
 
@@ -82,7 +77,7 @@ public abstract class BaseTestsWithArtefacts : BaseTests
         UpsertWritingOfAnswerRequest? writingOfAnswerRequest = null,
         string? description = null
     ) =>
-        _interactiveManager.UpsertInteractiveAsync(new UpsertInteractiveRequest
+        Startup.InteractiveManager.UpsertInteractiveAsync(new UpsertInteractiveRequest
         {
             InteractiveId = id,
             ArticleId = articlePublic.Id,
@@ -103,7 +98,7 @@ public abstract class BaseTestsWithArtefacts : BaseTests
         UpsertReplyAnswerChoiceRequest? choiceOfAnswerRequest = null,
         UpsertReplyProgramWritingRequest? programWritingRequest = null,
         UpsertReplyWritingOfAnswerRequest? writingOfAnswerRequest = null) =>
-        _interactiveManager.UpsertInteractiveReplyAsync(new UpsertInteractiveReplyRequest
+        Startup.InteractiveManager.UpsertInteractiveReplyAsync(new UpsertInteractiveReplyRequest
         {
             InteractiveId = interactiveId,
             ArticleId = articleId,

@@ -7,7 +7,7 @@ import {
   ComponentWrapper,
   HeadContent,
   SaveAnswerButtonWrapper,
-  SaveAnswerButton
+  SaveAnswerButton,
 } from "./BaseInteractiveComponent.styles";
 import { InteractiveType } from "../../../../entities/InteractiveType";
 import ErrorLineHandler from "../../../common/ErrorLineHandler";
@@ -29,10 +29,10 @@ const BaseInteractiveComponent = (props) => {
   const [isEditing, setIsEditing] = useState();
   const [isChanged, setIsChanged] = useState();
   const [description, setDescription] = useState(props.interactive.description);
-  
+
   const { interactiveStore, stateStore } = useStore();
   const { isLoading } = stateStore;
-  const { upsertInteractiveReply } = interactiveStore;
+  const { upsertInteractiveReply, upsertInteractive } = interactiveStore;
 
   const getInteractiveComponent = (interactive) => {
     if (interactive.interactiveType === InteractiveType.CheckList) {
@@ -47,6 +47,7 @@ const BaseInteractiveComponent = (props) => {
           isLoading={isLoading}
           ref={componentRef}
           setIsChanged={setIsChanged}
+          isEditing={isEditing}
         />
       );
     } else if (interactive.interactiveType === InteractiveType.ChoiceOfAnswer) {
@@ -61,6 +62,7 @@ const BaseInteractiveComponent = (props) => {
           isLoading={isLoading}
           setIsChanged={setIsChanged}
           ref={componentRef}
+          isEditing={isEditing}
         />
       );
     } else if (interactive.interactiveType === InteractiveType.ProgramWriting) {
@@ -75,6 +77,7 @@ const BaseInteractiveComponent = (props) => {
           isLoading={isLoading}
           setIsChanged={setIsChanged}
           ref={componentRef}
+          isEditing={isEditing}
         />
       );
     } else if (
@@ -91,6 +94,7 @@ const BaseInteractiveComponent = (props) => {
           isLoading={isLoading}
           setIsChanged={setIsChanged}
           ref={componentRef}
+          isEditing={isEditing}
         />
       );
     }
@@ -99,7 +103,21 @@ const BaseInteractiveComponent = (props) => {
   const onEditClickHandler = () => {
     setIsEditing(!isEditing);
   };
-  const onSaveClickHandler = () => {};
+  const onSaveClickHandler = () => {
+    let request = componentRef.current.getInteractiveData();
+    request.interactiveId = props.interactive.id;
+    request.articleId = props.article.id;
+    request.courseId = props.article.courseId;
+    request.description = description;
+    upsertInteractive(request, props.isNewInteractive, (error) => {
+      if (error) {
+        setError(error);
+        return;
+      }
+      setIsEditing(false);
+      componentRef.current.saveCallback();
+    });
+  };
   const onDeleteClickHandler = () => {};
 
   const onSaveReplyClickHandler = () => {

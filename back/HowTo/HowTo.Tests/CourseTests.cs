@@ -8,12 +8,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HowTo.Tests;
 
-public class CourseTests : BaseTests
+public class CourseTests : BaseTestsWithArtefacts<CourseTests>
 {
-    public CourseTests() : base("/Users/gently/Temp/CourseTests-howto-test-content")
-    {
-    }
-
     [Fact]
     private async void CreateCourseAsync()
     {
@@ -25,8 +21,8 @@ public class CourseTests : BaseTests
             Description = "TestCourseDescription",
             File = GetFormImage()
         };
-        await _courseManager.UpsertCourseAsync(courseRequest, user)
-            .InvokeOnSuccessAsync(course => _courseManager.GetCourseWithFilesByIdAsync(course.Id, user)
+        await Startup.CourseManager.UpsertCourseAsync(courseRequest, user)
+            .InvokeOnSuccessAsync(course => Startup.CourseManager.GetCourseWithFilesByIdAsync(course.Id, user)
                 .InvokeOnSuccessAsync(coursePublic =>
                 {
                     Assert.Equal(courseRequest.Title, coursePublic.Title);
@@ -49,7 +45,7 @@ public class CourseTests : BaseTests
             Description = "TestCourseDescription",
             File = GetFormImage()
         };
-        var courseOperation = await _courseManager.UpsertCourseAsync(courseRequest, user);
+        var courseOperation = await Startup.CourseManager.UpsertCourseAsync(courseRequest, user);
         Assert.True(courseOperation.Success);
 
         var image = GetFormImage();
@@ -60,16 +56,17 @@ public class CourseTests : BaseTests
             Description = "TestCourseDescriptionSecond",
             File = image
         };
-        var updateCourseOperation = await _courseManager.UpsertCourseAsync(updateCourseRequest, user);
+        var updateCourseOperation = await Startup.CourseManager.UpsertCourseAsync(updateCourseRequest, user);
         Assert.True(updateCourseOperation.Success);
 
         var getFileOperation =
-            await _fileSystemHelper.GetCourseFilesAsync(courseOperation.Value.Id);
+            await Startup.FileSystemHelper.GetCourseFilesAsync(courseOperation.Value.Id);
         Assert.True(getFileOperation.Success);
         Assert.Single(getFileOperation.Value);
         Assert.False(CompareByteArrayAndFormFile(getFileOperation.Value.First(), image));
 
-        var courseDto = await _dbContext.CourseContext.SingleOrDefaultAsync
+        await using var db = await Startup.DbContextFactory.CreateDbContextAsync();
+        var courseDto = await db.CourseContext.SingleOrDefaultAsync
         (c => c.Id == updateCourseOperation.Value.Id
               && c.Title == updateCourseRequest.Title
               && c.Description == updateCourseRequest.Description);
@@ -89,16 +86,16 @@ public class CourseTests : BaseTests
             Description = "TestCourseDescription",
             File = GetFormImage()
         };
-        var upsertCourseOperation = await _courseManager.UpsertCourseAsync(courseRequest, user);
+        var upsertCourseOperation = await Startup.CourseManager.UpsertCourseAsync(courseRequest, user);
         Assert.True(upsertCourseOperation.Success, upsertCourseOperation.DumpAllErrors());
 
-        var getCourseOperation = await _courseManager.GetCourseWithFilesByIdAsync(upsertCourseOperation.Value.Id, user);
+        var getCourseOperation = await Startup.CourseManager.GetCourseWithFilesByIdAsync(upsertCourseOperation.Value.Id, user);
         Assert.True(getCourseOperation.Success, getCourseOperation.DumpAllErrors());
 
-        var deleteOperation = await _courseManager.DeleteCourseAsync(getCourseOperation.Value.Id);
+        var deleteOperation = await Startup.CourseManager.DeleteCourseAsync(getCourseOperation.Value.Id);
         Assert.True(deleteOperation.Success, deleteOperation.DumpAllErrors());
 
-        var getFileAfterDeleteOperation = await _fileSystemHelper.GetCourseFilesAsync(
+        var getFileAfterDeleteOperation = await Startup.FileSystemHelper.GetCourseFilesAsync(
             deleteOperation.Value.Id);
         Assert.Equal(ActionStatus.Ok, getFileAfterDeleteOperation.ActionStatus);
         Assert.False(getFileAfterDeleteOperation.Success);
@@ -116,7 +113,7 @@ public class CourseTests : BaseTests
             Title = "TestCourseTitle",
             Description = "TestCourseDescription"
         };
-        var courseOperation = await _courseManager.UpsertCourseAsync(courseRequest, firstUser);
+        var courseOperation = await Startup.CourseManager.UpsertCourseAsync(courseRequest, firstUser);
         Assert.True(courseOperation.Success, courseOperation.DumpAllErrors());
 
         var articleRequest = new UpsertArticleRequest
@@ -126,12 +123,12 @@ public class CourseTests : BaseTests
             File = GetFormFile(_firstFormFileContent)
         };
 
-        var firstArticleOperation = await _articleManager.UpsertArticleAsync(articleRequest, firstUser);
+        var firstArticleOperation = await Startup.ArticleManager.UpsertArticleAsync(articleRequest, firstUser);
         Assert.True(firstArticleOperation.Success, firstArticleOperation.DumpAllErrors());
-        var secondArticleOperation = await _articleManager.UpsertArticleAsync(articleRequest, secondUser);
+        var secondArticleOperation = await Startup.ArticleManager.UpsertArticleAsync(articleRequest, secondUser);
         Assert.True(secondArticleOperation.Success, secondArticleOperation.DumpAllErrors());
 
-        var getCourseOperation = await _courseManager.GetCourseWithFilesByIdAsync(courseOperation.Value.Id, firstUser);
+        var getCourseOperation = await Startup.CourseManager.GetCourseWithFilesByIdAsync(courseOperation.Value.Id, firstUser);
         Assert.True(getCourseOperation.Success, secondArticleOperation.DumpAllErrors());
         Assert.Equal(2, getCourseOperation.Value.Contributors.Count());
     }

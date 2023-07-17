@@ -42,8 +42,7 @@ export const InteractiveTextareaDescription = styled.div`
 `;
 
 export const InteractiveComponentWrapper = styled.div`
-  padding: 15px 20px 20px 20px;
-  transition: 0.2s;
+  padding-bottom: 20px;
 `;
 
 export const SaveAnswerButton = styled.button`

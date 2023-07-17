@@ -5,12 +5,8 @@ using HowTo.Entities.Course;
 
 namespace HowTo.Tests;
 
-public class MultiThreadingTests : BaseTests
+public class MultiThreadingTests : BaseTests<MultiThreadingTests>
 {
-    public MultiThreadingTests() : base("/Users/gently/Temp/MultiThreadingTests-howto-test-content")
-    {
-    }
-    
     [Fact]
     public async void  MultiUpsertingAsync()
     {
@@ -21,7 +17,7 @@ public class MultiThreadingTests : BaseTests
             Title = "TestCourseTitle",
             Description = "TestCourseDescription"
         };
-        var courseOperation = await _courseManager.UpsertCourseAsync(courseRequest, user);
+        var courseOperation = await Startup.CourseManager.UpsertCourseAsync(courseRequest, user);
         Assert.True(courseOperation.Success);
 
         var courseTaskList = new List<Task<OperationResult<CoursePublic>>>(100);
@@ -40,8 +36,8 @@ public class MultiThreadingTests : BaseTests
                 Description = "TestCourseDescription",
                 File = GetFormImage()
             };
-            courseTaskList.Add(_courseManager.UpsertCourseAsync(course, user));
-            articleTaskList.Add(_articleManager.UpsertArticleAsync(article, user));
+            courseTaskList.Add(Startup.CourseManager.UpsertCourseAsync(course, user));
+            articleTaskList.Add(Startup.ArticleManager.UpsertArticleAsync(article, user));
         }
 
         await Task.WhenAll(courseTaskList);

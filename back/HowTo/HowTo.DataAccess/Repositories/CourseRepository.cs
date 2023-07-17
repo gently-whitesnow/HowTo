@@ -12,18 +12,18 @@ namespace HowTo.DataAccess.Repositories;
 
 public class CourseRepository
 {
-    private readonly ApplicationContext _db;
-
-    public CourseRepository(ApplicationContext applicationContext)
+    private readonly IDbContextFactory<ApplicationContext> _dbContextFactory;
+    public CourseRepository(IDbContextFactory<ApplicationContext> dbContextFactory)
     {
-        _db = applicationContext;
+        _dbContextFactory = dbContextFactory;
     }
 
     public async Task<OperationResult<CourseDto>> InsertCourseAsync(UpsertCourseRequest request)
     {
         try
         {
-            var courseDto = await _db.CourseContext.SingleOrDefaultAsync(c => c.Title == request.Title);
+            using var db = _dbContextFactory.CreateDbContext();
+            var courseDto = await db.CourseContext.SingleOrDefaultAsync(c => c.Title == request.Title);
             if (courseDto != null)
                 return new (Errors.CourseTitleAlreadyExist(courseDto.Title));
 
@@ -35,8 +35,8 @@ public class CourseRepository
                 UpdatedAt = DateTime.UtcNow
             };
 
-            await _db.CourseContext.AddAsync(dto);
-            await _db.SaveChangesAsync();
+            await db.CourseContext.AddAsync(dto);
+            await db.SaveChangesAsync();
             return new (dto);
         }
         catch (Exception ex)
@@ -49,7 +49,8 @@ public class CourseRepository
     {
         try
         {
-            var courseDto = await _db.CourseContext.FirstOrDefaultAsync(c => c.Id == request.CourseId);
+            using var db = _dbContextFactory.CreateDbContext();
+            var courseDto = await db.CourseContext.FirstOrDefaultAsync(c => c.Id == request.CourseId);
             if (courseDto == null)
                 return new(Errors.CourseNotFound(request.CourseId!.Value));
 
@@ -57,7 +58,7 @@ public class CourseRepository
             courseDto.Title = request.Title;
             courseDto.Description = request.Description;
 
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync();
             return new(courseDto);
         }
         catch (Exception ex)
@@ -70,7 +71,8 @@ public class CourseRepository
     {
         try
         {
-            var courseDto = await _db.CourseContext
+            using var db = _dbContextFactory.CreateDbContext();
+            var courseDto = await db.CourseContext
                 .Include(c => c.Articles)
                 .ThenInclude(a=>a.Author)
                 .SingleOrDefaultAsync(c => c.Id == courseId);
@@ -89,19 +91,20 @@ public class CourseRepository
     {
         try
         {
-            var courseDto = await _db.CourseContext
+            using var db = _dbContextFactory.CreateDbContext();
+            var courseDto = await db.CourseContext
                 .Include(d=>d.Articles)
                 .ThenInclude(a=>a.Author)
                 .SingleOrDefaultAsync(c => c.Id == courseId);
             if (courseDto == null)
                 return new(Errors.CourseNotFound(courseId));
 
-            _db.CourseContext.Remove(courseDto);
+            db.CourseContext.Remove(courseDto);
             foreach (var articleDto in courseDto.Articles)
             {
-                _db.ArticleContext.Remove(articleDto);
+                db.ArticleContext.Remove(articleDto);
             }
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync();
             return new(courseDto);
         }
         catch (Exception ex)
@@ -114,7 +117,8 @@ public class CourseRepository
     {
         try
         {
-            return new(await _db.CourseContext
+            using var db = _dbContextFactory.CreateDbContext();
+            return new(await db.CourseContext
                 .Include(d=>d.Articles)
                 .ToListAsync());
         }

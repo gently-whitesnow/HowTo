@@ -17,11 +17,10 @@ namespace HowTo.DataAccess.Repositories;
 
 public class InteractiveRepository
 {
-    private readonly ApplicationContext _db;
-
-    public InteractiveRepository(ApplicationContext applicationContext)
+    private readonly IDbContextFactory<ApplicationContext> _dbContextFactory;
+    public InteractiveRepository(IDbContextFactory<ApplicationContext> dbContextFactory)
     {
-        _db = applicationContext;
+        _dbContextFactory = dbContextFactory;
     }
 
     public async Task<OperationResult<TDto>> UpsertInteractiveAsync<TDto>(
@@ -32,7 +31,8 @@ public class InteractiveRepository
     {
         try
         {
-            var dbContext = _db.Set<TDto>();
+            using var db = _dbContextFactory.CreateDbContext();
+            var dbContext = db.Set<TDto>();
             var interactiveDto = await dbContext.SingleOrDefaultAsync(upsertCondition);
             if (interactiveDto == null)
             {
@@ -40,7 +40,7 @@ public class InteractiveRepository
             }
 
             updateFunc(interactiveDto);
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync();
             return new(interactiveDto);
         }
         catch (Exception ex)
@@ -55,9 +55,10 @@ public class InteractiveRepository
     {
         try
         {
+            using var db = _dbContextFactory.CreateDbContext();
             var dto = getFunc();
-            await _db.Set<TDto>().AddAsync(dto);
-            await _db.SaveChangesAsync();
+            await db.Set<TDto>().AddAsync(dto);
+            await db.SaveChangesAsync();
             return new(dto);
         }
         catch (Exception ex)
@@ -70,13 +71,14 @@ public class InteractiveRepository
     {
         try
         {
-            var checkListDto = await _db.CheckListContext.AsQueryable()
+            using var db = _dbContextFactory.CreateDbContext();
+            var checkListDto = await db.CheckListContext.AsQueryable()
                 .Where(a => a.CourseId == courseId && a.ArticleId == articleId).ToArrayAsync();
-            var choiceOfAnswerDto = await _db.ChoiceOfAnswerContext.AsQueryable()
+            var choiceOfAnswerDto = await db.ChoiceOfAnswerContext.AsQueryable()
                 .Where(a => a.CourseId == courseId && a.ArticleId == articleId).ToArrayAsync();
-            var programWritingDto = await _db.ProgramWritingContext.AsQueryable()
+            var programWritingDto = await db.ProgramWritingContext.AsQueryable()
                 .Where(a => a.CourseId == courseId && a.ArticleId == articleId).ToArrayAsync();
-            var writingOfAnswerDto = await _db.WritingOfAnswerContext.AsQueryable()
+            var writingOfAnswerDto = await db.WritingOfAnswerContext.AsQueryable()
                 .Where(a => a.CourseId == courseId && a.ArticleId == articleId).ToArrayAsync();
 
             return new(new InteractivePublic(
@@ -95,6 +97,7 @@ public class InteractiveRepository
     {
         try
         {
+            using var db = _dbContextFactory.CreateDbContext();
             var checkListDto = await GetLastInteractiveDtoAsync<LastCheckListDto>();
             var choiceOfAnswerDto =await GetLastInteractiveDtoAsync<LastChoiceOfAnswerDto>();
             var programWritingDto = await GetLastInteractiveDtoAsync<LastProgramWritingDto>();
@@ -107,7 +110,7 @@ public class InteractiveRepository
                 writingOfAnswerDto.Select(d=>new LastWritingOfAnswerPublic(d)).ToArray()));
 
             async Task<TInteractiveDto[]> GetLastInteractiveDtoAsync<TInteractiveDto>() where TInteractiveDto : LastInteractiveBase 
-                => await _db.Set<TInteractiveDto>().AsQueryable()
+                => await db.Set<TInteractiveDto>().AsQueryable()
                     .Where(a => a.CourseId == courseId && a.ArticleId == articleId && a.UserId == user.Id).ToArrayAsync();
         }
         catch (Exception ex)
@@ -121,7 +124,8 @@ public class InteractiveRepository
     {
         try
         {
-            var dbContext = _db.Set<TDto>();
+            using var db = _dbContextFactory.CreateDbContext();
+            var dbContext = db.Set<TDto>();
             var interactiveDto = await dbContext.SingleOrDefaultAsync(c => c.Id == interactiveId);
 
             return interactiveDto != null
@@ -139,14 +143,15 @@ public class InteractiveRepository
     {
         try
         {
-            var dbContext = _db.Set<TDto>();
+            using var db = _dbContextFactory.CreateDbContext();
+            var dbContext = db.Set<TDto>();
             dynamic interactiveDto = await dbContext.SingleOrDefaultAsync(c => c.Id == interactiveId);
 
             if (interactiveDto == null)
                 return new(Errors.InteractiveNotFound(interactiveId));
 
             dbContext.Remove(interactiveDto);
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync();
             return new(new InteractiveByIdPublic(interactiveDto));
         }
         catch (Exception ex)

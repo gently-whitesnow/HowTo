@@ -5,12 +5,8 @@ using HowTo.Entities.ViewedEntity;
 
 namespace HowTo.Tests;
 
-public class ApprovedViewTests : BaseTests
+public class ApprovedViewTests : BaseTestsWithArtefacts<ApprovedViewTests>
 {
-    public ApprovedViewTests() : base("/Users/gently/Temp/ApprovedViewTests-howto-test-content")
-    {
-    }
-    
     [Fact]
     public async void AddApprovedViewAsync()
     {
@@ -21,7 +17,7 @@ public class ApprovedViewTests : BaseTests
             Title = "TestCourseTitle",
             Description = "TestCourseDescription"
         };
-        var courseOperation = await _courseManager.UpsertCourseAsync(courseRequest, user);
+        var courseOperation = await Startup.CourseManager.UpsertCourseAsync(courseRequest, user);
         Assert.True(courseOperation.Success);
 
         var articleRequest = new UpsertArticleRequest
@@ -31,24 +27,24 @@ public class ApprovedViewTests : BaseTests
             File = GetFormFile(_firstFormFileContent)
         };
 
-        var firstArticleOperation = await _articleManager.UpsertArticleAsync(articleRequest, user);
+        var firstArticleOperation = await Startup.ArticleManager.UpsertArticleAsync(articleRequest, user);
         Assert.True(firstArticleOperation.Success);
         
-        var secondArticleOperation = await _articleManager.UpsertArticleAsync(articleRequest, user);
+        var secondArticleOperation = await Startup.ArticleManager.UpsertArticleAsync(articleRequest, user);
         Assert.True(secondArticleOperation.Success);
 
-        var approvedViewOperation = await _userInfoManager.AddApprovedViewAsync(user, new AddApprovedViewRequest
+        var approvedViewOperation = await Startup.UserInfoManager.AddApprovedViewAsync(user, new AddApprovedViewRequest
         {
             CourseId = firstArticleOperation.Value.CourseId,
             ArticleId = firstArticleOperation.Value.Id
         });
         Assert.True(approvedViewOperation.Success);
 
-        var summaryOperation = await _summaryManager.GetSummaryAsync(user);
+        var summaryOperation = await Startup.SummaryManager.GetSummaryAsync(user);
         Assert.True(summaryOperation.Success);
         Assert.Equal(1, summaryOperation.Value.LastCourse?.UserApprovedViews);
         
-        var getArticleOperation = await _articleManager.GetArticleWithFileByIdAsync(
+        var getArticleOperation = await Startup.ArticleManager.GetArticleWithFileByIdAsync(
             firstArticleOperation.Value.CourseId,firstArticleOperation.Value.Id, user);
         Assert.True(getArticleOperation.Success, getArticleOperation.DumpAllErrors());
         

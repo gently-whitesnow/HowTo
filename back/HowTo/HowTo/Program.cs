@@ -33,6 +33,7 @@ services.WithOptions()
     .WithMangers()
     .WithAdapters()
     .WithHelpers()
+    .WithDbContextFactory()
     .WithRepositories()
     .WithExtensionsInfrastructure();
 

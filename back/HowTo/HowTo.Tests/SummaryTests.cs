@@ -3,12 +3,8 @@ using HowTo.Entities.Course;
 
 namespace HowTo.Tests;
 
-public class SummaryTests : BaseTests
+public class SummaryTests : BaseTests<SummaryTests>
 {
-    public SummaryTests() : base("/Users/gently/Temp/SummaryTests-howto-test-content")
-    {
-    }
-
     [Fact]
     public async void CheckSummaryFilesAsync()
     {
@@ -20,7 +16,7 @@ public class SummaryTests : BaseTests
             Description = "TestCourseDescription",
             File = GetFormImage()
         };
-        var firstCourseOperation = await _courseManager.UpsertCourseAsync(firstCourseRequest, user);
+        var firstCourseOperation = await Startup.CourseManager.UpsertCourseAsync(firstCourseRequest, user);
         Assert.True(firstCourseOperation.Success, firstCourseOperation.DumpAllErrors());
 
         var secondCourseRequest = new UpsertCourseRequest
@@ -29,10 +25,10 @@ public class SummaryTests : BaseTests
             Description = "TestCourseDescription",
             File = GetFormImage()
         };
-        var secondCourseOperation = await _courseManager.UpsertCourseAsync(secondCourseRequest, user);
+        var secondCourseOperation = await Startup.CourseManager.UpsertCourseAsync(secondCourseRequest, user);
         Assert.True(secondCourseOperation.Success, firstCourseOperation.DumpAllErrors());
 
-        var summaryOperation = await _summaryManager.GetSummaryAsync(user);
+        var summaryOperation = await Startup.SummaryManager.GetSummaryAsync(user);
         Assert.True(summaryOperation.Success, firstCourseOperation.DumpAllErrors());
         Assert.Equal(2, summaryOperation.Value.Courses.Count(d => d.Files.Count() == 1));
     }

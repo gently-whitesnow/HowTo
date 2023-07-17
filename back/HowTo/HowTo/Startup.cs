@@ -126,9 +126,16 @@ public static class Startup
         services.AddSingleton<InteractiveManager>();
         return services;
     }
+    
+    public static IServiceCollection WithDbContextFactory(this IServiceCollection services)
+    {
+        services.AddDbContextFactory<ApplicationContext>((options) =>
+            options
+                .UseSqlite());
+        return services;
+    }
     public static IServiceCollection WithRepositories(this IServiceCollection services)
     {
-        services.AddSingleton<ApplicationContext>();
         services.AddSingleton<ArticleRepository>();
         services.AddSingleton<CourseRepository>();
         services.AddSingleton<ViewRepository>();
