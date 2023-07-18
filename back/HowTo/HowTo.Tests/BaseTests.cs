@@ -1,17 +1,6 @@
 using System.Text;
-using ATI.Services.Common.Extensions;
-using HowTo.DataAccess.Helpers;
-using HowTo.DataAccess.Managers;
-using HowTo.DataAccess.Repositories;
-using HowTo.Entities;
-using HowTo.Entities.Options;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Data.SqlClient;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
@@ -73,19 +62,19 @@ public abstract class BaseTests<TestClassName> : IDisposable
     public void Dispose()
     {
         var directory = new DirectoryInfo(Startup.RootPath);
-
+        
         if (directory.Exists)
         {
             foreach (var file in directory.GetFiles())
             {
                 file.Delete();
             }
-
+        
             foreach (var dir in directory.GetDirectories())
             {
                 dir.Delete(true);
             }
-
+        
             directory.Delete();
         }
     }

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace HowTo.Tests;
 
-public class TestsStartup<TestClassName> :IDisposable
+public class TestsStartup<TestClassName>
 {
     public ArticleManager ArticleManager { get; set; }
     public CourseManager CourseManager { get; set; }
@@ -18,9 +18,7 @@ public class TestsStartup<TestClassName> :IDisposable
     public SummaryManager SummaryManager{ get; set; }
     public InteractiveManager InteractiveManager{ get; set; }
     public IDbContextFactory<ApplicationContext> DbContextFactory{ get; set; }
-    public readonly string RootPath = $"/Users/gently/Temp/{typeof(TestClassName).FullName}-howto-test-content";
-
-    private ServiceProvider _serviceProvider;
+    public readonly string RootPath = $"/Users/gently/Temp/{typeof(TestClassName).FullName}-howto-test-content/{Guid.NewGuid()}/";
     public TestsStartup()
     {
         var provider = SetUpProvider();
@@ -39,40 +37,27 @@ public class TestsStartup<TestClassName> :IDisposable
         var serviceCollection = new ServiceCollection();
 
         serviceCollection.AddDbContextFactory<ApplicationContext>((options) => { options.UseSqlite(); });
-
         serviceCollection.WithRepositories();
         serviceCollection.WithMangers();
 
-        serviceCollection.AddSingleton<FileSystemHelper>(new FileSystemHelper(Options.Create(new FileSystemOptions
+        serviceCollection.AddSingleton(new FileSystemHelper(Options.Create(new FileSystemOptions
         {
             RootPath = RootPath
         })));
+        Directory.CreateDirectory(RootPath);
         serviceCollection.AddSingleton(Options.Create(new DbSettings()
         {
-            DefaultConnection = $"Data Source={Guid.NewGuid()};Mode=Memory;Cache=Shared;"
+            DefaultConnection = $"Data Source={RootPath}/{Guid.NewGuid()}"
         }));
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
-
-        var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
         
-        using (var scope = scopeFactory.CreateScope())
+        using (var scope = serviceProvider.CreateScope())
         {
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
-            dbContext.Database.EnsureCreated();
+            var context = scope.ServiceProvider.GetService<ApplicationContext>();
+            context.Database.EnsureCreated();
         }
-
-        _serviceProvider = serviceProvider;
+        
         return serviceProvider;
-    }
-
-
-    public void Dispose()
-    {
-        var scopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
-        if (scopeFactory is IDisposable disposable)
-        {
-            disposable.Dispose();
-        }
     }
 }

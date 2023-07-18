@@ -17,4 +17,3 @@ sudo cp -rf ~/nginx.conf /etc/nginx
 # Запускаем сервис (перезапускаем в фоновом режиме)
 docker-compose down
 docker-compose up -d
-

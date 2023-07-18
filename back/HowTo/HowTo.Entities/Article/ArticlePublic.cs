@@ -1,12 +1,11 @@
 using System;
 using System.Linq;
-using HowTo.Entities.BTree;
 using HowTo.Entities.Contributor;
 using HowTo.Entities.UserInfo;
 
 namespace HowTo.Entities.Article;
 
-public class ArticlePublic : IBTreeValue
+public class ArticlePublic
 {
     public ArticlePublic(ArticleDto articleDto,User user, UserUniqueInfoDto? userUniqueInfo)
     {

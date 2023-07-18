@@ -46,22 +46,14 @@ public class ApplicationContext : DbContext
         _options = conOptions;
     }
 
-    // TODO подумать как еще можно многопоточно взаимодействовать с sqlite 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (optionsBuilder.IsConfigured)
             return;
-        
-        var connection = new SqliteConnection(_options.Value.DefaultConnection);
-        connection.Open();
 
-        // Установка уровня изоляции на SERIALIZABLE
-        using (var command = connection.CreateCommand())
-        {
-            command.CommandText = "PRAGMA read_uncommitted = false";
-            command.ExecuteNonQuery();
-        }
+        var sqliteConnection = new SqliteConnection(_options.Value.DefaultConnection);
+        sqliteConnection.Open();
 
-        optionsBuilder.UseSqlite(connection);
+        optionsBuilder.UseSqlite(sqliteConnection);
     }
 }

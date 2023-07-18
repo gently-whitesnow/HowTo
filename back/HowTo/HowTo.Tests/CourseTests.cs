@@ -132,6 +132,4 @@ public class CourseTests : BaseTestsWithArtefacts<CourseTests>
         Assert.True(getCourseOperation.Success, secondArticleOperation.DumpAllErrors());
         Assert.Equal(2, getCourseOperation.Value.Contributors.Count());
     }
-    
-    
 }
