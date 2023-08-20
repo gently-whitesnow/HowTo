@@ -26,7 +26,6 @@ public class InteractiveTests : BaseTestsWithArtefacts<InteractiveTests>
         await InitInteractiveAsync(articleOperation.Value,  programWritingRequest:new UpsertProgramWritingRequest()
         {
             Code = "code",
-            Output = "success"
         });
         await InitInteractiveAsync(articleOperation.Value,  writingOfAnswerRequest:new UpsertWritingOfAnswerRequest
         {
@@ -109,7 +108,6 @@ public class InteractiveTests : BaseTestsWithArtefacts<InteractiveTests>
         var firstRequest = new UpsertProgramWritingRequest
         {
             Code = "code",
-            Output = "output"
         };
         await InitInteractiveAsync(articleOperation.Value, 
             programWritingRequest: firstRequest);
@@ -117,7 +115,6 @@ public class InteractiveTests : BaseTestsWithArtefacts<InteractiveTests>
         var secondRequest = new UpsertProgramWritingRequest
         {
             Code = "code2",
-            Output = "output2"
         };
         await InitInteractiveAsync(articleOperation.Value, 
             programWritingRequest: secondRequest);
@@ -128,10 +125,8 @@ public class InteractiveTests : BaseTestsWithArtefacts<InteractiveTests>
         
         Assert.True(interactiveOperation.Value.ProgramWriting.Length == 2);
         Assert.Equal(firstRequest.Code, interactiveOperation.Value.ProgramWriting[0].Code);
-        Assert.Equal(firstRequest.Output, interactiveOperation.Value.ProgramWriting[0].Output);
 
         Assert.Equal(secondRequest.Code, interactiveOperation.Value.ProgramWriting[1].Code);
-        Assert.Equal(secondRequest.Output, interactiveOperation.Value.ProgramWriting[1].Output);
     }
     
     [Fact]

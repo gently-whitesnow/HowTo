@@ -11,7 +11,7 @@ const Textarea = (props) => {
   };
 
   return (
-    <TextareaWrapper>
+    <TextareaWrapper className={props.className}>
       <TextareaContent
         color={props.color ?? "black"}
         value={props.value}

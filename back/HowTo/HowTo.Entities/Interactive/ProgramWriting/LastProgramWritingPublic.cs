@@ -10,8 +10,9 @@ public class LastProgramWritingPublic : LastInteractivePublicBase
         ArticleId = request.ArticleId;
         CourseId = request.CourseId;
         Code = request.UpsertReplyProgramWriting.Code;
-        Success = ValidateProgramWriting(request.UpsertReplyProgramWriting.Code, dto.Output);
+        Success = ValidateProgramWriting(request.UpsertReplyProgramWriting.Code);
         InteractiveType = InteractiveType.ProgramWriting;
+        Output = "success";
     }
     
     public LastProgramWritingPublic(LastProgramWritingDto dto)
@@ -22,11 +23,13 @@ public class LastProgramWritingPublic : LastInteractivePublicBase
         Code = dto.Code;
         Success = dto.Success;
         InteractiveType = InteractiveType.ProgramWriting;
+        Output = dto.Output;
     }
     public string Code { get; init; }
+    public string Output { get; init; }
     public bool Success { get; init; }
     
     // TODO разработка сервиса под компиляцию и запуск кода
-    private bool ValidateProgramWriting(string code, string output) =>
-        code.Trim().ToLower().Contains(output.Trim().ToLower());
+    private bool ValidateProgramWriting(string code) =>
+        code.Trim().ToLower().Contains("success");
 }

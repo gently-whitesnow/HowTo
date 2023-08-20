@@ -104,7 +104,7 @@ public abstract class BaseTestsWithArtefacts<TestClassName> : BaseTests<TestClas
             ArticleId = articleId,
             CourseId = courseId,
             UpsertReplyCheckList = checkListRequest,
-            UpsertReplyAnswerChoice = choiceOfAnswerRequest,
+            UpsertReplyChoiceOfAnswer = choiceOfAnswerRequest,
             UpsertReplyProgramWriting = programWritingRequest,
             UpsertReplyWritingOfAnswer = writingOfAnswerRequest
         },

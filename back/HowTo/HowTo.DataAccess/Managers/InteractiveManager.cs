@@ -109,14 +109,12 @@ public class InteractiveManager
                         CourseId = request.CourseId,
 
                         Description = request.Description,
-                        Code = request.UpsertProgramWriting.Code,
-                        Output = request.UpsertProgramWriting.Output
+                        Code = request.UpsertProgramWriting.Code
                     },
                 dto =>
                 {
                     dto.Description = request.Description;
                     dto.Code = request.UpsertProgramWriting.Code;
-                    dto.Output = request.UpsertProgramWriting.Output;
                 }),
             
             
@@ -206,11 +204,13 @@ public class InteractiveManager
                         CourseId = request.CourseId,
                         UserId = user.Id,
                         Code = request.UpsertReplyProgramWriting.Code,
+                        Output = interactiveWithReply.ProgramWriting.Output,
                         Success = interactiveWithReply.ProgramWriting.UserSuccess ?? false
                     },
                     dto =>
                     {
                         dto.Code = request.UpsertReplyProgramWriting.Code;
+                        dto.Output = interactiveWithReply.ProgramWriting.Output;
                         dto.Success = interactiveWithReply.ProgramWriting.UserSuccess ?? false;
                     }).InvokeOnSuccessAsync(LogProgramWritingAsync)),
             
@@ -269,7 +269,7 @@ public class InteractiveManager
     {
         if (request.UpsertReplyCheckList != null)
             return InteractiveType.CheckList;
-        if (request.UpsertReplyAnswerChoice != null)
+        if (request.UpsertReplyChoiceOfAnswer != null)
             return InteractiveType.ChoiceOfAnswer;
         if (request.UpsertReplyProgramWriting != null)
             return InteractiveType.ProgramWriting;

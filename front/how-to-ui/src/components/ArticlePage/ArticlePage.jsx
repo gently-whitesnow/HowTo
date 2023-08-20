@@ -8,7 +8,6 @@ import {
   ArticlePageWrapper,
 } from "./ArticlePage.styles";
 import { observer } from "mobx-react-lite";
-import theme from "../../theme";
 import MarkdownHandler from "./MarkdownHandler/MarkdownHandler";
 import Button from "../common/Button/Button";
 import OneClickButton from "../common/OneClickButton/OneClickButton";

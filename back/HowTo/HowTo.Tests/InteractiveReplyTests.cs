@@ -26,7 +26,6 @@ public class InteractiveReplyTests : BaseTestsWithArtefacts<InteractiveReplyTest
         var programWritingOperation = await InitInteractiveAsync(articleOperation.Value, programWritingRequest:new UpsertProgramWritingRequest()
         {
             Code = "code",
-            Output = "success"
         });
         var writingOfAnswerOperation = await InitInteractiveAsync(articleOperation.Value, writingOfAnswerRequest:new UpsertWritingOfAnswerRequest
         {
@@ -150,7 +149,6 @@ public class InteractiveReplyTests : BaseTestsWithArtefacts<InteractiveReplyTest
         var request = new UpsertProgramWritingRequest
         {
             Code = "code",
-            Output = "output"
         };
         var initInteractiveOperation = await InitInteractiveAsync(articleOperation.Value, 
             programWritingRequest: request);

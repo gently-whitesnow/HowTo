@@ -13,11 +13,13 @@
     "markdown-it": "^13.0.1",
     "markdown-it-emoji": "^2.0.2",
     "mobx-react-lite": "^3.4.3",
+    "prismjs": "^1.29.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-graceful-image": "^1.5.0",
     "react-router-dom": "^6.11.0",
     "react-scripts": "^5.0.1",
+    "react-simple-code-editor": "^0.13.1",
     "styled-components": "^5.3.10",
     "web-vitals": "^2.1.4"
   },

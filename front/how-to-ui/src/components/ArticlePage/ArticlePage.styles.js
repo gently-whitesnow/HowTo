@@ -22,6 +22,7 @@ export const ArticlePageAuthor = styled.div`
 `;
 
 export const ArticlePageContent = styled.div`
+  width: 100%;
   margin-top: 30px;
   max-width: 800px;
   padding: 20px;

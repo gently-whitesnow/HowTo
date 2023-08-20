@@ -69,6 +69,23 @@ class InteractiveStore {
     this.interactive.push(data);
   };
 
+  upsertInteractiveReplyHandler = (interactiveReplyData) => {
+    if (interactiveReplyData === undefined) return;
+
+    let data =
+      interactiveReplyData.checkList ??
+      interactiveReplyData.choiceOfAnswer ??
+      interactiveReplyData.programWriting ??
+      interactiveReplyData.writingOfAnswer;
+
+    this.interactive = this.interactive.map((interactive) =>
+      interactive.id === data.id &&
+      interactive.interactiveType === data.interactiveType
+        ? data
+        : interactive
+    );
+  };
+
   getInteractive = (courseId, articleId) => {
     this.clearStore();
     this.rootStore.stateStore.setIsLoading(true);
@@ -97,7 +114,7 @@ class InteractiveStore {
         this.rootStore.stateStore.setIsLoading(false);
 
         if (isNewInteractive) {
-          this.addNewInteractive(undefined);
+          this.setNewInteractive(undefined);
           this.addInteractiveData(data);
         }
         errorCallback();
@@ -116,6 +133,7 @@ class InteractiveStore {
     api
       .upsertInteractiveReply(upsertRequest)
       .then(({ data }) => {
+        this.upsertInteractiveReplyHandler(data);
         this.rootStore.stateStore.setIsLoading(false);
         callback();
       })
@@ -136,10 +154,7 @@ class InteractiveStore {
       .then(({ data }) => {
         this.rootStore.stateStore.setIsLoading(false);
         this.interactive = this.interactive.filter(
-          (obj) => obj.interactiveId !== data.interactiveId
-        );
-        this.lastInteractive = this.lastInteractive.filter(
-          (obj) => obj.interactiveId !== data.interactiveId
+          (obj) => obj.id !== interactiveId
         );
       })
       .catch((err) => {
@@ -154,7 +169,6 @@ class InteractiveStore {
 
   clearStore = () => {
     this.newInteractive = undefined;
-    this.lastInteractive = undefined;
     this.interactive = undefined;
   };
 }

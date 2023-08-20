@@ -43,7 +43,7 @@ const CheckListComponent = forwardRef(function CheckListComponent(props, ref) {
         getInteractiveData() {
           return {
             upsertCheckList: {
-              clauses: clauses.concat(newClauses.filter((e)=>e!=="")),
+              clauses: getProcessedClauses(),
             },
           };
         },
@@ -51,13 +51,15 @@ const CheckListComponent = forwardRef(function CheckListComponent(props, ref) {
           setInitialChecked(CopyArray(userChecked, initialChecked));
         },
         saveCallback() {
-          setClauses(clauses.concat(newClauses.filter((e)=>e!=="")))
+          setClauses(getProcessedClauses());
           setNewClauses([]);
         },
       };
     },
     []
   );
+
+  const getProcessedClauses = () => {return clauses.concat(newClauses.filter((e) => e.trim().length !== 0))}
 
   const onClickHandler = (index) => {
     if (props.isLoading) return;
@@ -108,8 +110,8 @@ const CheckListComponent = forwardRef(function CheckListComponent(props, ref) {
   const getNewCheckLines = () => {
     let lines = [];
     if (!props.isEditing) return lines;
-    
-    tryPushEmptyClause()
+
+    tryPushEmptyClause();
 
     for (let index = 0; index < newClauses.length; index++) {
       lines.push(

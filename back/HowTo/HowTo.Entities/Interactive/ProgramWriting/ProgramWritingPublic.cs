@@ -4,12 +4,11 @@ namespace HowTo.Entities.Interactive.ProgramWriting;
 
 public class ProgramWritingPublic : InteractivePublicBase
 {
-    public ProgramWritingPublic(ProgramWritingDto dto, bool isAuthor = true)
+    public ProgramWritingPublic(ProgramWritingDto dto)
     {
         Id = dto.Id;
         Description = dto.Description;
         Code = dto.Code;
-        Output = isAuthor ? dto.Output : null;
         InteractiveType = InteractiveType.ProgramWriting;
     }
 

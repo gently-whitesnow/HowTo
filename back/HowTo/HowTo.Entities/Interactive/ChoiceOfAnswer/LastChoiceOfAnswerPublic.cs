@@ -12,8 +12,8 @@ public class LastChoiceOfAnswerPublic : LastInteractivePublicBase
         InteractiveId = request.InteractiveId;
         ArticleId = request.ArticleId;
         CourseId = request.CourseId;
-        Answers = request.UpsertReplyAnswerChoice.Answers;
-        SuccessAnswers = ValidateChoiceOfAnswer(request.UpsertReplyAnswerChoice.Answers,
+        Answers = request.UpsertReplyChoiceOfAnswer.Answers;
+        SuccessAnswers = ValidateChoiceOfAnswer(request.UpsertReplyChoiceOfAnswer.Answers,
             JsonConvert.DeserializeObject<bool[]>(choiceOfAnswerDto.AnswersJsonBoolArray));
         InteractiveType = InteractiveType.ChoiceOfAnswer;
     }

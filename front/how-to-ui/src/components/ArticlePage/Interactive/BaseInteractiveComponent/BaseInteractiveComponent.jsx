@@ -32,7 +32,8 @@ const BaseInteractiveComponent = (props) => {
 
   const { interactiveStore, stateStore } = useStore();
   const { isLoading } = stateStore;
-  const { upsertInteractiveReply, upsertInteractive } = interactiveStore;
+  const { upsertInteractiveReply, upsertInteractive, setNewInteractive, deleteInteractive } =
+    interactiveStore;
 
   const getInteractiveComponent = (interactive) => {
     if (interactive.interactiveType === InteractiveType.CheckList) {
@@ -45,8 +46,8 @@ const BaseInteractiveComponent = (props) => {
           setError={setError}
           article={props.article}
           isLoading={isLoading}
-          ref={componentRef}
           setIsChanged={setIsChanged}
+          ref={componentRef}
           isEditing={isEditing}
         />
       );
@@ -109,7 +110,7 @@ const BaseInteractiveComponent = (props) => {
     request.articleId = props.article.id;
     request.courseId = props.article.courseId;
     request.description = description;
-    upsertInteractive(request, props.isNewInteractive, (error) => {
+    upsertInteractive(request, props.interactive.isNewInteractive, (error) => {
       if (error) {
         setError(error);
         return;
@@ -118,7 +119,20 @@ const BaseInteractiveComponent = (props) => {
       componentRef.current.saveCallback();
     });
   };
-  const onDeleteClickHandler = () => {};
+
+  const onDeleteClickHandler = () => {
+    if (props.interactive.isNewInteractive) {
+      setNewInteractive(undefined);
+      return;
+    }
+
+    deleteInteractive(props.interactive.interactiveType, props.interactive.id, (error) => {
+      if (error) {
+        setError(error);
+        return;
+      }
+    });
+  };
 
   const onSaveReplyClickHandler = () => {
     if (!isChanged) return;

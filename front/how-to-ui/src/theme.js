@@ -6,7 +6,8 @@ const theme = {
     purpule: "#e002c2",
     violet:"#b5b1fc",
     orange:"#ffc96f",
-    red:"rgba(255, 106, 106,1)"
+    red:"rgba(255, 106, 106,1)",
+    gray:"#d0d0d0"
   },
   CardColors: [
     // red ["rgba(255, 106, 106,1)","rgba(255, 106, 106,0.8)", "rgba(255, 106, 106,0.6)", "rgba(255, 106, 106,0.4)", "rgba(255, 106, 106,0.2)"],

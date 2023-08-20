@@ -46,7 +46,7 @@ export const InteractiveComponentWrapper = styled.div`
 `;
 
 export const SaveAnswerButton = styled.button`
-  margin: 20px;
+  margin: 0px 20px 20px 20px;
   height: 30px;
   width: 160px;
   border: none;

@@ -8,7 +8,7 @@ import BaseComponent from "../BaseInteractiveComponent/BaseInteractiveComponent"
 const InteractiveList = (props) => {
   const { interactiveStore, articleStore, colorStore } = useStore();
   const { currentColorTheme } = colorStore;
-  const { getInteractive, interactive, newInteractive, isInteractiveChoise } =
+  const { getInteractive, interactive, newInteractive} =
     interactiveStore;
   const { article } = articleStore;
 

@@ -31,6 +31,7 @@ public class InteractiveByIdPublic
         {
             UserCode = lastProgramWriting?.Code,
             UserSuccess = lastProgramWriting?.Success,
+            Output = lastProgramWriting.Output
         };
     }
 

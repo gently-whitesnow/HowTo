@@ -83,8 +83,8 @@ public class InteractiveRepository
 
             return new(new InteractivePublic(
                 checkListDto.Select(dto => new CheckListPublic(dto)).ToArray(),
-                choiceOfAnswerDto.Select(dto => new ChoiceOfAnswerPublic(dto, isAuthor)).ToArray(),
-                programWritingDto.Select(dto => new ProgramWritingPublic(dto, isAuthor)).ToArray(),
+                choiceOfAnswerDto.Select(dto => new ChoiceOfAnswerPublic(dto)).ToArray(),
+                programWritingDto.Select(dto => new ProgramWritingPublic(dto)).ToArray(),
                 writingOfAnswerDto.Select(dto => new WritingOfAnswerPublic(dto, isAuthor)).ToArray()));
         }
         catch (Exception ex)
