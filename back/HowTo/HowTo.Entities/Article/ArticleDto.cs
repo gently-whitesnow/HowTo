@@ -14,6 +14,9 @@ public class ArticleDto
     [MinLength(3)]
     [MaxLength(100)]
     public string Title { get; set; }
+    
+    [Required]
+    public EntityStatus Status { get; set; }
 
     [Required] public DateTimeOffset CreatedAt { get; set; }
     [Required] public DateTimeOffset UpdatedAt { get; set; }

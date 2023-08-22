@@ -23,7 +23,7 @@ public class ViewRepository
     {
         try
         {
-            using var db = _dbContextFactory.CreateDbContext();
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
             var viewDto = await db.ViewContext
                 .Include(d=>d.Viewers)
                 .SingleOrDefaultAsync(v => v.CourseId == courseId && v.ArticleId == articleId);
@@ -56,7 +56,7 @@ public class ViewRepository
     {
         try
         {
-            using var db = _dbContextFactory.CreateDbContext();
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
             return new(await db.ViewContext
                 .Include(d=>d.Viewers)
                 .Where(v => v.CourseId == courseId 

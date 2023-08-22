@@ -40,7 +40,7 @@ public class SummaryManager
             return new OperationResult<SummaryResponse>();
         var summaryResponse = new SummaryResponse
         {
-            Courses = allCoursesOperation.Value.Select(c => new CourseSummary
+            Courses = allCoursesOperation.Value.Where(c=>SummaryViewCondition(user, c)).Select(c => new CourseSummary
             {
                 Id = c.Id,
                 Title = c.Title,
@@ -77,4 +77,11 @@ public class SummaryManager
 
         return OperationResult.Ok;
     }
+
+    private bool SummaryViewCondition(User user, CourseDto course) => user.UserRole == UserRole.Admin
+                                                                      || course.Author.UserId == user.Id
+                                                                      || course.Articles.Count != 0
+                                                                      && (course.Status == EntityStatus.Published
+                                                                      || course.Articles.Any(a =>
+                                                                          a.Author.UserId == user.Id));
 }

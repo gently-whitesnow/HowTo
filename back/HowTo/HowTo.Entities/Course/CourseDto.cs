@@ -19,6 +19,12 @@ public class CourseDto
     [MinLength(10)]
     [MaxLength(1000)]
     public string Description { get; set; }
+    
+    [Required]
+    public EntityStatus Status { get; set; }
+    
+    [Required] 
+    public virtual ContributorEntity Author { get; set; }
 
     [Required]
     public DateTimeOffset CreatedAt { get; set; }

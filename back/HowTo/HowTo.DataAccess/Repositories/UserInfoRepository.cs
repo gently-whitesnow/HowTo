@@ -22,7 +22,7 @@ public class UserInfoRepository
     {
         try
         {
-            using var db = _dbContextFactory.CreateDbContext();
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
             var userInfoDto = await db.UserUniqueInfoContext.FirstOrDefaultAsync(v => v.Id == user.Id);
             if (userInfoDto == null)
             {
@@ -51,7 +51,7 @@ public class UserInfoRepository
     {
         try
         {
-            using var db = _dbContextFactory.CreateDbContext();
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
             var userInfoDto = await db.UserUniqueInfoContext
                 .Include(d=>d.ApprovedViewArticleIds)
                 .SingleOrDefaultAsync(v => v.Id == user.Id);
@@ -84,7 +84,7 @@ public class UserInfoRepository
     {
         try
         {
-            using var db = _dbContextFactory.CreateDbContext();
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
             var userInfoDto = await db.UserUniqueInfoContext
                 .Include(d=>d.ApprovedViewArticleIds)
                 .SingleOrDefaultAsync(u => u.Id == user.Id);

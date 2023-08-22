@@ -27,7 +27,7 @@ public class CourseManager
     {
         OperationResult<CourseDto> upsertOperation;
         if (request.CourseId == null)
-            upsertOperation = await _courseRepository.InsertCourseAsync(request);
+            upsertOperation = await _courseRepository.InsertCourseAsync(request, user);
         else
             upsertOperation = await _courseRepository.UpdateCourseAsync(request);
 
@@ -50,6 +50,12 @@ public class CourseManager
         
         return new(new CoursePublic(upsertOperation.Value, user, userOperation.Value));
     }
+    
+    public Task<OperationResult<CourseDto>> UpdateStatusCourseAsync(UpdateStatusCourseRequest request)
+    {
+        return  _courseRepository.UpdateStatusCourseAsync(request);
+    }
+    
     public async Task<OperationResult<CoursePublic>> GetCourseWithFilesByIdAsync(int courseId, User user)
     {
         var courseOperation = await _courseRepository.GetCourseByIdAsync(courseId);

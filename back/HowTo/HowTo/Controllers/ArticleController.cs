@@ -30,6 +30,18 @@ public class ArticleController: Controller
         return _articleManager.UpsertArticleAsync(request, user).AsActionResultAsync();
     }
     
+    /// <summary>
+    /// Обновление статуса страницы
+    /// </summary>
+    [HttpPut]
+    [Route("api/articles")]
+    [ValidateModelState]
+    [AdminRequired]
+    public Task<IActionResult> StatusUpdateArticleAsync([FromForm] UpdateStatusArticleRequest request)
+    {
+        return _articleManager.UpdateStatusArticleAsync(request).AsActionResultAsync();
+    }
+    
     [HttpDelete]
     [Route("api/articles/{courseId}/{articleId}")]
     [ValidateModelState]

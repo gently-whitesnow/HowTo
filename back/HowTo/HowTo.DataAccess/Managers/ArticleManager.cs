@@ -51,8 +51,12 @@ public class ArticleManager
 
         return new(new ArticlePublic(upsertOperation.Value, user, userOperation.Value));
     }
-
-
+    
+    public Task<OperationResult<ArticleDto>> UpdateStatusArticleAsync(UpdateStatusArticleRequest request)
+    {
+        return  _articleRepository.UpdateStatusArticleAsync(request);
+    }
+    
     public async Task<OperationResult<GetArticleResponse>> GetArticleWithFileByIdAsync(
         int courseId,
         int articleId,

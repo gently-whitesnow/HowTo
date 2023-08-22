@@ -14,7 +14,7 @@ public class CourseTests : BaseTestsWithArtefacts<CourseTests>
     private async void CreateCourseAsync()
     {
         var userId = Guid.NewGuid();
-        var user = new User(userId, "TestUserName");
+        var user = new User(userId, "TestUserName", UserRole.None);
         var courseRequest = new UpsertCourseRequest
         {
             Title = "TestCourseTitle",
@@ -38,7 +38,7 @@ public class CourseTests : BaseTestsWithArtefacts<CourseTests>
     private async void UpdateCourseAsync()
     {
         var userId = Guid.NewGuid();
-        var user = new User(userId, "TestUserName");
+        var user = new User(userId, "TestUserName", UserRole.None);
         var courseRequest = new UpsertCourseRequest
         {
             Title = "TestCourseTitle",
@@ -79,7 +79,7 @@ public class CourseTests : BaseTestsWithArtefacts<CourseTests>
     {
         var userId = Guid.NewGuid();
 
-        var user = new User(userId, "TestUserName");
+        var user = new User(userId, "TestUserName", UserRole.None);
         var courseRequest = new UpsertCourseRequest
         {
             Title = "TestCourseTitle",
@@ -89,7 +89,8 @@ public class CourseTests : BaseTestsWithArtefacts<CourseTests>
         var upsertCourseOperation = await Startup.CourseManager.UpsertCourseAsync(courseRequest, user);
         Assert.True(upsertCourseOperation.Success, upsertCourseOperation.DumpAllErrors());
 
-        var getCourseOperation = await Startup.CourseManager.GetCourseWithFilesByIdAsync(upsertCourseOperation.Value.Id, user);
+        var getCourseOperation =
+            await Startup.CourseManager.GetCourseWithFilesByIdAsync(upsertCourseOperation.Value.Id, user);
         Assert.True(getCourseOperation.Success, getCourseOperation.DumpAllErrors());
 
         var deleteOperation = await Startup.CourseManager.DeleteCourseAsync(getCourseOperation.Value.Id);
@@ -106,8 +107,8 @@ public class CourseTests : BaseTestsWithArtefacts<CourseTests>
     {
         var firstUserId = Guid.NewGuid();
         var secondUserId = Guid.NewGuid();
-        var firstUser = new User(firstUserId, "FirstTestUserName");
-        var secondUser = new User(secondUserId, "SecondTestUserName");
+        var firstUser = new User(firstUserId, "FirstTestUserName", UserRole.None);
+        var secondUser = new User(secondUserId, "SecondTestUserName", UserRole.None);
         var courseRequest = new UpsertCourseRequest
         {
             Title = "TestCourseTitle",
@@ -128,8 +129,58 @@ public class CourseTests : BaseTestsWithArtefacts<CourseTests>
         var secondArticleOperation = await Startup.ArticleManager.UpsertArticleAsync(articleRequest, secondUser);
         Assert.True(secondArticleOperation.Success, secondArticleOperation.DumpAllErrors());
 
-        var getCourseOperation = await Startup.CourseManager.GetCourseWithFilesByIdAsync(courseOperation.Value.Id, firstUser);
+        var getCourseOperation =
+            await Startup.CourseManager.GetCourseWithFilesByIdAsync(courseOperation.Value.Id, firstUser);
         Assert.True(getCourseOperation.Success, secondArticleOperation.DumpAllErrors());
         Assert.Equal(2, getCourseOperation.Value.Contributors.Count());
+    }
+
+    [Fact]
+    private async void CreateAndUpdateStatusArticleAsync()
+    {
+        var courseOperation = await InitCourseAsync(user: FirstUser);
+
+        Assert.Equal(courseOperation.Value.Status, EntityStatus.Moderation);
+
+        var updateStatusOperation = await Startup.CourseManager.UpdateStatusCourseAsync(new UpdateStatusCourseRequest
+        {
+            CourseId = courseOperation.Value.Id,
+            Status = EntityStatus.Published
+        });
+        Assert.True(updateStatusOperation.Success, updateStatusOperation.DumpAllErrors());
+        Assert.Equal(updateStatusOperation.Value.Status, EntityStatus.Published);
+
+        var getAfterUpdateCourseOperation =
+            await Startup.CourseManager.GetCourseWithFilesByIdAsync(updateStatusOperation.Value.Id, FirstUser);
+        Assert.True(getAfterUpdateCourseOperation.Success, getAfterUpdateCourseOperation.DumpAllErrors());
+        Assert.Equal(getAfterUpdateCourseOperation.Value.Status, EntityStatus.Published);
+    }
+    
+    [Fact]
+    public async void CheckCourseViewConditionAsync()
+    {
+        var firstCourseOperation = await InitCourseAsync(user: FirstUser, courseTitle:"firstTitle");
+        await InitArticleAsync(firstCourseOperation.Value, user: FirstUser);
+        var secondArticleOperation = await InitArticleAsync(firstCourseOperation.Value, user: FirstUser);
+        
+        var courseByAuthorOperation = await Startup.CourseManager.GetCourseWithFilesByIdAsync(firstCourseOperation.Value.Id, FirstUser);
+        Assert.True(courseByAuthorOperation.Success, courseByAuthorOperation.DumpAllErrors());
+        Assert.Equal(2, courseByAuthorOperation.Value.Articles.Count());
+
+        var courseByAdminOperation = await Startup.CourseManager.GetCourseWithFilesByIdAsync(firstCourseOperation.Value.Id, AdminUser);
+        Assert.True(courseByAdminOperation.Success, courseByAuthorOperation.DumpAllErrors());
+        Assert.Equal(2, courseByAdminOperation.Value.Articles.Count());
+        
+        var updateStatusOperation = await Startup.ArticleManager.UpdateStatusArticleAsync(new UpdateStatusArticleRequest
+        {
+            CourseId = secondArticleOperation.Value.CourseId,
+            ArticleId= secondArticleOperation.Value.Id,
+            Status = EntityStatus.Published
+        });
+        Assert.True(updateStatusOperation.Success, updateStatusOperation.DumpAllErrors());
+        
+        var courseByAnotherUserOperation = await Startup.CourseManager.GetCourseWithFilesByIdAsync(firstCourseOperation.Value.Id, SecondUser);
+        Assert.True(courseByAnotherUserOperation.Success, courseByAnotherUserOperation.DumpAllErrors());
+        Assert.Equal(1, courseByAnotherUserOperation.Value.Articles.Count());
     }
 }

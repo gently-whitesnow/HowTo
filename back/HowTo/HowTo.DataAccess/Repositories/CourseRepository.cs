@@ -18,17 +18,22 @@ public class CourseRepository
         _dbContextFactory = dbContextFactory;
     }
 
-    public async Task<OperationResult<CourseDto>> InsertCourseAsync(UpsertCourseRequest request)
+    public async Task<OperationResult<CourseDto>> InsertCourseAsync(UpsertCourseRequest request, User user)
     {
         try
         {
-            using var db = _dbContextFactory.CreateDbContext();
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
             var courseDto = await db.CourseContext.SingleOrDefaultAsync(c => c.Title == request.Title);
             if (courseDto != null)
                 return new (Errors.CourseTitleAlreadyExist(courseDto.Title));
 
             var dto = new CourseDto
             {
+                Author = new ContributorEntity
+                {
+                    UserId = user.Id,
+                    Name = user.Name
+                },
                 Title = request.Title,
                 Description = request.Description,
                 CreatedAt = DateTime.UtcNow,
@@ -49,8 +54,9 @@ public class CourseRepository
     {
         try
         {
-            using var db = _dbContextFactory.CreateDbContext();
-            var courseDto = await db.CourseContext.FirstOrDefaultAsync(c => c.Id == request.CourseId);
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+            var courseDto = await db.CourseContext.Include(c=>c.Author)
+                .FirstOrDefaultAsync(c => c.Id == request.CourseId);
             if (courseDto == null)
                 return new(Errors.CourseNotFound(request.CourseId!.Value));
 
@@ -67,12 +73,34 @@ public class CourseRepository
         }
     }
     
+    public async Task<OperationResult<CourseDto>> UpdateStatusCourseAsync(UpdateStatusCourseRequest request)
+    {
+        try
+        {
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+            var courseDto = await db.CourseContext.SingleOrDefaultAsync(c => c.Id == request.CourseId);
+            if (courseDto == null)
+                return new(Errors.CourseNotFound(request.CourseId));
+
+            courseDto.UpdatedAt = DateTimeOffset.Now;
+            courseDto.Status = request.Status;
+
+            await db.SaveChangesAsync();
+            return new(courseDto);
+        }
+        catch (Exception ex)
+        {
+            return new(ex);
+        }
+    }
+    
     public async Task<OperationResult<CourseDto>> GetCourseByIdAsync(int courseId)
     {
         try
         {
-            using var db = _dbContextFactory.CreateDbContext();
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
             var courseDto = await db.CourseContext
+                .Include(d=>d.Author)
                 .Include(c => c.Articles)
                 .ThenInclude(a=>a.Author)
                 .SingleOrDefaultAsync(c => c.Id == courseId);
@@ -91,8 +119,9 @@ public class CourseRepository
     {
         try
         {
-            using var db = _dbContextFactory.CreateDbContext();
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
             var courseDto = await db.CourseContext
+                .Include(d=>d.Author)
                 .Include(d=>d.Articles)
                 .ThenInclude(a=>a.Author)
                 .SingleOrDefaultAsync(c => c.Id == courseId);
@@ -117,9 +146,11 @@ public class CourseRepository
     {
         try
         {
-            using var db = _dbContextFactory.CreateDbContext();
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
             return new(await db.CourseContext
+                .Include(d=>d.Author)
                 .Include(d=>d.Articles)
+                .ThenInclude(a=>a.Author)
                 .ToListAsync());
         }
         catch (Exception ex)

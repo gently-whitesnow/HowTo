@@ -94,7 +94,7 @@ public class ArticleTests : BaseTestsWithArtefacts<ArticleTests>
         var upsertArticleOperation = await Startup.ArticleManager.UpsertArticleAsync(articleRequest, FirstUser);
         Assert.True(upsertArticleOperation.Success, upsertArticleOperation.DumpAllErrors());
         var requesterUserId = Guid.NewGuid();
-        var requesterUser = new User(requesterUserId, "RequesterTestUserName");
+        var requesterUser = new User(requesterUserId, "RequesterTestUserName", UserRole.None);
         var getArticleOperation =
             await Startup.ArticleManager.GetArticleWithFileByIdAsync(upsertArticleOperation.Value.CourseId,
                 upsertArticleOperation.Value.Id, requesterUser);
@@ -192,5 +192,42 @@ public class ArticleTests : BaseTestsWithArtefacts<ArticleTests>
             deleteOperation.Value.Id);
         Assert.Equal(ActionStatus.Ok, getFileAfterDeleteFirstArticleOperation.ActionStatus);
         Assert.False(getFileAfterDeleteFirstArticleOperation.Success);
+    }
+    
+    [Fact]
+    private async void CreateAndUpdateStatusArticleAsync()
+    {
+        var courseOperation = await InitCourseAsync(user: FirstUser);
+        
+        var articleRequest = new UpsertArticleRequest
+        {
+            CourseId = courseOperation.Value.Id,
+            Title = "TestArticleTitle",
+            File = GetFormFile(_firstFormFileContent)
+        };
+
+        var upsertArticleOperation = await Startup.ArticleManager.UpsertArticleAsync(articleRequest, FirstUser);
+        Assert.True(upsertArticleOperation.Success, upsertArticleOperation.DumpAllErrors());
+        
+        var getArticleOperation =
+            await Startup.ArticleManager.GetArticleWithFileByIdAsync(upsertArticleOperation.Value.CourseId,
+                upsertArticleOperation.Value.Id, FirstUser);
+        Assert.True(getArticleOperation.Success, getArticleOperation.DumpAllErrors());
+        Assert.Equal(getArticleOperation.Value.Article.Status, EntityStatus.Moderation);
+        
+        var updateStatusOperation = await Startup.ArticleManager.UpdateStatusArticleAsync(new UpdateStatusArticleRequest
+        {
+            CourseId = getArticleOperation.Value.Article.CourseId,
+            ArticleId= getArticleOperation.Value.Article.Id,
+            Status = EntityStatus.Published
+        });
+        Assert.True(updateStatusOperation.Success, updateStatusOperation.DumpAllErrors());
+        Assert.Equal(updateStatusOperation.Value.Status, EntityStatus.Published);
+        
+        var getAfterUpdateArticleOperation =
+            await Startup.ArticleManager.GetArticleWithFileByIdAsync(updateStatusOperation.Value.CourseId,
+                updateStatusOperation.Value.Id, FirstUser);
+        Assert.True(getAfterUpdateArticleOperation.Success, getAfterUpdateArticleOperation.DumpAllErrors());
+        Assert.Equal(getAfterUpdateArticleOperation.Value.Article.Status, EntityStatus.Published);
     }
 }

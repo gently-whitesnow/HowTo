@@ -14,8 +14,9 @@ namespace HowTo.Tests;
 
 public abstract class BaseTestsWithArtefacts<TestClassName> : BaseTests<TestClassName>
 {
-    protected User FirstUser = new User(Guid.NewGuid(), "FirstTestUserName");
-    protected User SecondUser = new User(Guid.NewGuid(), "SecondTestUserName");
+    protected User FirstUser = new User(Guid.NewGuid(), "FirstTestUserName", UserRole.None);
+    protected User SecondUser = new User(Guid.NewGuid(), "SecondTestUserName", UserRole.None);
+    protected User AdminUser = new User(Guid.NewGuid(), "AdminTestUserName", UserRole.Admin);
 
     protected Task<OperationResult<CoursePublic>> InitCourseAsync(
         int? id = null,

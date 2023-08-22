@@ -13,10 +13,11 @@ public class FakeAuthorizationRequiredAttribute : ActionFilterAttribute
         if (!string.IsNullOrEmpty(cookie))
         {
             var data = cookie.Split(":");
-            if (data.Length == 2 && !string.IsNullOrEmpty(data[0]) && !string.IsNullOrEmpty(data[1]) &&
+            if (data.Length == 3 && !string.IsNullOrEmpty(data[0]) && !string.IsNullOrEmpty(data[1]) &&
                 Guid.TryParse(data[1], out var id))
             {
-                var user = new User(id, data[0]);
+                Enum.TryParse(data[1], out UserRole role);
+                var user = new User(id, data[0], role);
 
                 actionContext.HttpContext.User = new GenericPrincipal(new UserIdentity(user), Array.Empty<string>());
                 return;

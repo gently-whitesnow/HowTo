@@ -30,6 +30,18 @@ public class CourseController : Controller
         return _courseManager.UpsertCourseAsync(request, user).AsActionResultAsync();
     }
     
+    /// <summary>
+    /// Обновление статуса курса
+    /// </summary>
+    [HttpPut]
+    [Route("api/course")]
+    [ValidateModelState]
+    [AdminRequired]
+    public Task<IActionResult> StatusUpdateArticleAsync([FromForm] UpdateStatusCourseRequest request)
+    {
+        return _courseManager.UpdateStatusCourseAsync(request).AsActionResultAsync();
+    }
+    
     [HttpGet]
     [Route("api/courses/{courseId}")]
     [ValidateModelState]

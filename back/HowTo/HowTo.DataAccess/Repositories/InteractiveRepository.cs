@@ -31,7 +31,7 @@ public class InteractiveRepository
     {
         try
         {
-            using var db = _dbContextFactory.CreateDbContext();
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
             var dbContext = db.Set<TDto>();
             var interactiveDto = await dbContext.SingleOrDefaultAsync(upsertCondition);
             if (interactiveDto == null)
@@ -55,7 +55,7 @@ public class InteractiveRepository
     {
         try
         {
-            using var db = _dbContextFactory.CreateDbContext();
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
             var dto = getFunc();
             await db.Set<TDto>().AddAsync(dto);
             await db.SaveChangesAsync();
@@ -71,7 +71,7 @@ public class InteractiveRepository
     {
         try
         {
-            using var db = _dbContextFactory.CreateDbContext();
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
             var checkListDto = await db.CheckListContext.AsQueryable()
                 .Where(a => a.CourseId == courseId && a.ArticleId == articleId).ToArrayAsync();
             var choiceOfAnswerDto = await db.ChoiceOfAnswerContext.AsQueryable()
@@ -83,7 +83,7 @@ public class InteractiveRepository
 
             return new(new InteractivePublic(
                 checkListDto.Select(dto => new CheckListPublic(dto)).ToArray(),
-                choiceOfAnswerDto.Select(dto => new ChoiceOfAnswerPublic(dto)).ToArray(),
+                choiceOfAnswerDto.Select(dto => new ChoiceOfAnswerPublic(dto, isAuthor)).ToArray(),
                 programWritingDto.Select(dto => new ProgramWritingPublic(dto)).ToArray(),
                 writingOfAnswerDto.Select(dto => new WritingOfAnswerPublic(dto, isAuthor)).ToArray()));
         }
@@ -97,7 +97,7 @@ public class InteractiveRepository
     {
         try
         {
-            using var db = _dbContextFactory.CreateDbContext();
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
             var checkListDto = await GetLastInteractiveDtoAsync<LastCheckListDto>();
             var choiceOfAnswerDto =await GetLastInteractiveDtoAsync<LastChoiceOfAnswerDto>();
             var programWritingDto = await GetLastInteractiveDtoAsync<LastProgramWritingDto>();
@@ -124,7 +124,7 @@ public class InteractiveRepository
     {
         try
         {
-            using var db = _dbContextFactory.CreateDbContext();
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
             var dbContext = db.Set<TDto>();
             var interactiveDto = await dbContext.SingleOrDefaultAsync(c => c.Id == interactiveId);
 
@@ -143,7 +143,7 @@ public class InteractiveRepository
     {
         try
         {
-            using var db = _dbContextFactory.CreateDbContext();
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
             var dbContext = db.Set<TDto>();
             dynamic interactiveDto = await dbContext.SingleOrDefaultAsync(c => c.Id == interactiveId);
 

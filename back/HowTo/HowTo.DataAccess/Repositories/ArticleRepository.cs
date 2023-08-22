@@ -21,7 +21,7 @@ public class ArticleRepository
     {
         try
         {
-            using var db = _dbContextFactory.CreateDbContext();
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
             var courseDto = await db.CourseContext
                 .Include(d => d.Articles)
                 .ThenInclude(a => a.Author)
@@ -41,7 +41,8 @@ public class ArticleRepository
                     {
                         UserId = user.Id,
                         Name = user.Name
-                    }
+                    },
+                    Status = EntityStatus.Moderation
                 };
                 courseDto.Articles.Add(dto);
                 await db.SaveChangesAsync();
@@ -65,12 +66,41 @@ public class ArticleRepository
             return new(ex);
         }
     }
+    
+    public async Task<OperationResult<ArticleDto>> UpdateStatusArticleAsync(UpdateStatusArticleRequest request)
+    {
+        try
+        {
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+            var courseDto = await db.CourseContext
+                .Include(d => d.Articles)
+                .SingleOrDefaultAsync(c => c.Id == request.CourseId);
+            if (courseDto == null)
+                return new(Errors.CourseNotFound(request.CourseId));
+
+            var article = courseDto.Articles.FirstOrDefault(a => a.Id == request.ArticleId);
+            if (article == null)
+                return new(Errors.ArticleNotFound(request.CourseId, request.ArticleId.Value));
+            
+            courseDto.UpdatedAt = DateTimeOffset.Now;
+            
+            article.UpdatedAt = DateTime.UtcNow;
+            article.Status = request.Status;
+
+            await db.SaveChangesAsync();
+            return new(article);
+        }
+        catch (Exception ex)
+        {
+            return new(ex);
+        }
+    }
 
     public async Task<OperationResult<ArticleDto>> GetArticleByIdAsync(int courseId, int articleId)
     {
         try
         {
-            using var db = _dbContextFactory.CreateDbContext();
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
             var articleDto = await db.ArticleContext
                 .Include(d => d.Author)
                 .SingleOrDefaultAsync(a => a.Id == articleId && a.CourseId == courseId);
@@ -89,7 +119,7 @@ public class ArticleRepository
     {
         try
         {
-            using var db = _dbContextFactory.CreateDbContext();
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
             var articleDto =
                 await db.ArticleContext
                     .Include(d=>d.Author)

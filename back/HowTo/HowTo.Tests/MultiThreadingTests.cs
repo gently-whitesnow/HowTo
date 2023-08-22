@@ -11,7 +11,7 @@ public class MultiThreadingTests : BaseTests<MultiThreadingTests>
     public async void  MultiUpsertingAsync()
     {
         var userId = Guid.NewGuid();
-        var user = new User(userId, "TestUserName");
+        var user = new User(userId, "TestUserName", UserRole.None);
         var courseRequest = new UpsertCourseRequest
         {
             Title = "TestCourseTitle",
