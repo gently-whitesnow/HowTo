@@ -24,6 +24,7 @@ class ArticleStore {
         id: data.article.id,
         courseId: data.article.courseId,
         title: data.article.title,
+        status: data.article.status,
         createdAt: data.article.createdAt,
         updatedAt: data.article.updatedAt,
         author: { userId: data.article.author?.userId, name: data.article.author?.name },

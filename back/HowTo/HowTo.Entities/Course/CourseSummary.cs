@@ -6,5 +6,6 @@ public class CourseSummary
 {
     public int Id { get; set; }
     public string Title { get; set; }
+    public EntityStatus Status { get; set; }
     public IEnumerable<byte[]> Files { get; set; }
 }

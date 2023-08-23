@@ -44,6 +44,7 @@ public class SummaryManager
             {
                 Id = c.Id,
                 Title = c.Title,
+                Status = c.Status
             }).ToList(),
 
             LastCourse = new CourseExtendedSummary
@@ -51,6 +52,7 @@ public class SummaryManager
                 Id = lastCourse.Id,
                 Description = lastCourse!.Description,
                 Title = lastCourse.Title,
+                Status = lastCourse.Status,
                 UserApprovedViews =
                     userOperation.Value?.ApprovedViewArticleIds.Count(a => a.CourseId == lastCourse.Id) ?? 0,
                 ArticlesCount = lastCourse.Articles.Count

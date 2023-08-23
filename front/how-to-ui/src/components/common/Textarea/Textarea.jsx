@@ -1,4 +1,3 @@
-import { useEffect, useRef } from "react";
 import { TextareaContent, TextareaWrapper } from "./Textarea.styles";
 import {
   clearTextAreaContent

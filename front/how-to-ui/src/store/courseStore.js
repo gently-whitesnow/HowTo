@@ -14,6 +14,7 @@ class CourseStore {
 
   id = undefined;
   title = "";
+  status = 0;
   description = "";
   createdAt = "";
   updatedAt = "";
@@ -34,11 +35,13 @@ class CourseStore {
   setCourseData = (course) => {
     this.title = course.title;
     this.description = course.description;
+    this.status = course.status;
     this.articles = course.articles?.map((a) => {
       return {
         id: a.id,
         courseId: a.courseId,
         title: a.title,
+        status: a.status,
         createdAt: a.createdAt,
         updatedAt: a.updatedAt,
         author: { userId: a.author?.userId, name: a.author?.name },
@@ -61,6 +64,7 @@ class CourseStore {
       id: article.id,
       courseId: article.courseId,
       title: article.title,
+      status: article.status,
       createdAt: article.createdAt,
       updatedAt: article.updatedAt,
       author: { userId: article.author?.userId, name: article.author?.name },

@@ -13,11 +13,10 @@ import {
   ImageWrapper,
 } from "./Tracker.styles";
 
-import Image from "react-graceful-image";
-import theme from "../../../theme";
 import { useNavigate } from "react-router";
 import ProgressBar from "../ProgressBar/ProgressBar";
 import { useStore } from "../../../store";
+import EntityTag from "../../common/EntityTag/EntityTag";
 
 const Tracker = () => {
   const { colorStore, summaryStore } = useStore();
@@ -54,6 +53,7 @@ const Tracker = () => {
           <RightUpSide>
             <Title color={currentColorTheme}>
               {summaryData?.lastCourse?.title}
+              <EntityTag status={summaryData?.lastCourse?.status} />
             </Title>
             <Description>{summaryData?.lastCourse?.description}</Description>
           </RightUpSide>

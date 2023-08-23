@@ -18,6 +18,7 @@ const CourseHolder = () => {
           return (
             <CourseCard
               title={data.title}
+              status={data.status}
               id={data.id}
               image={data.image}
               color={

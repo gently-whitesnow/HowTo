@@ -29,9 +29,9 @@ class StateStore {
     this.isNotFound = value;
   };
 
-  getAuth = (userId, userName) => {
+  getAuth = (userId, userName, userRole) => {
     api
-      .getAuth(userId, userName)
+      .getAuth(userId, userName, userRole)
       .then(({ data }) => {
         this.setIsLoading(false);
         this.authData = data;

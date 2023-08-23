@@ -16,15 +16,16 @@ public class FakeAuthorizationController : Controller
     [Route("api/fakeauth")]
     [ValidateModelState]
     public IActionResult GetAuthAsync([Required] [FromQuery] Guid userId,
-        [Required] [FromQuery] string userName, [FromQuery] UserRole userRole)
+        [Required] [FromQuery] string userName, [FromQuery] string userRole)
     {
-        HttpContext.Response.Cookies.Append(Constants.FakeAuthCookie, $"{userName}:{userId}:{userRole}",
+        Enum.TryParse<UserRole>(userRole, out var role);
+        HttpContext.Response.Cookies.Append(Constants.FakeAuthCookie, $"{userName}:{userId}:{role}",
             new CookieOptions
             {
                 Domain = HttpContext.Request.Host.Host,
                 Expires = DateTimeOffset.Now.AddDays(10)
             });
         
-        return Ok(new User(userId, userName, userRole));
+        return Ok(new User(userId, userName, role));
     }
 }

@@ -7,6 +7,7 @@ import {
   CourseLeftSide,
   CoursePageWrapper,
   CourseRightSide,
+  Title,
 } from "./CoursePage.styles";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../store";
@@ -21,17 +22,19 @@ import ErrorLineHandler from "../common/ErrorLineHandler/ErrorLineHandler";
 import Textarea from "../common/Textarea/Textarea";
 import ImageButton from "./ImageButton/ImageButton";
 import { IconButtonsWrapper } from "../common/EditWidget/EditWidget.styles";
+import EntityTag from "../common/EntityTag/EntityTag";
 
 const CoursePage = () => {
   const imageInputRef = useRef(null);
   const { colorStore, courseStore, stateStore } = useStore();
   const { currentColorTheme } = colorStore;
-  const {isLoading} = stateStore;
+  const { isLoading } = stateStore;
   const {
     getCourse,
     isCourseEditing,
     title,
     description,
+    status,
     setTitle,
     setDescription,
     isAuthor,
@@ -73,7 +76,7 @@ const CoursePage = () => {
 
   const clearImageHandler = () => {
     if (imageInputRef.current?.value) {
-      imageInputRef.current.value = '';
+      imageInputRef.current.value = "";
     }
   };
 
@@ -120,15 +123,22 @@ const CoursePage = () => {
                 setActionError={setCourseActionError}
               >
                 <CourseHeaderWrapper>
-                  <Textarea
-                    color={currentColorTheme}
-                    value={title}
-                    disabled={!isCourseEditing}
-                    onChange={(e) => onTitleChangeHandler(e)}
-                    maxLength={70}
-                    height={"100px"}
-                    placeholder={"Введите название курса"}
-                  />
+                  {isCourseEditing ? (
+                    <Textarea
+                      color={currentColorTheme}
+                      value={title}
+                      disabled={!isCourseEditing}
+                      onChange={(e) => onTitleChangeHandler(e)}
+                      maxLength={70}
+                      height={"100px"}
+                      placeholder={"Введите название курса"}
+                    />
+                  ) : (
+                    <Title color={currentColorTheme}>
+                      {title}
+                      <EntityTag status={status} />
+                    </Title>
+                  )}
 
                   {isAuthor ? (
                     isCourseEditing ? (

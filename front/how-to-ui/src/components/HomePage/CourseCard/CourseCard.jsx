@@ -6,6 +6,7 @@ import {
 } from "./CourseCard.styles";
 import { useNavigate } from "react-router";
 import ImageDisplay from "../ImageDisplay/ImageDisplay";
+import EntityTag from "../../common/EntityTag/EntityTag";
 
 const CourseCard = (props) => {
   const navigate = useNavigate();
@@ -14,10 +15,13 @@ const CourseCard = (props) => {
   };
 
   return (
-    <CourseCardWrapper  color={props.color}  onClick={onClickHandler}>
+    <CourseCardWrapper color={props.color} onClick={onClickHandler}>
       <CourseCardContent>
         <ImageDisplay color={props.color} image={props.image}></ImageDisplay>
-        <CardTitle>{props.title}</CardTitle>
+        <CardTitle>
+          {props.title}
+          <EntityTag status={props.status} />
+        </CardTitle>
       </CourseCardContent>
     </CourseCardWrapper>
   );

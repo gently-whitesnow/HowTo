@@ -15,7 +15,8 @@ const AuthPage = () => {
 
     const userId = urlParams.get("userId");
     const userName = urlParams.get("userName");
-    getAuth(userId, userName);
+    const userRole = urlParams.get("userRole");
+    getAuth(userId, userName, userRole);
   }, []);
 
   return <AuthPageWrapper>Авторизация</AuthPageWrapper>;

@@ -107,11 +107,11 @@ export class Api {
     });
 
   // auth
-  // http://localhost:3000/auth?userId=69550bf7-e7e1-4650-801d-e9159530decb&userName=testSanya
-  getAuth = (userId, userName) =>
+  // http://localhost:3000/auth?userId=69550bf7-e7e1-4650-801d-e9159530decb&userName=testSanya&role=1
+  getAuth = (userId, userName, userRole) =>
     this.clientWrapper(
       "get",
-      `api/fakeauth?userId=${userId}&userName=${userName}`
+      `api/fakeauth?userId=${userId}&userName=${userName}&userRole=${userRole}`
     );
 
   // interactive

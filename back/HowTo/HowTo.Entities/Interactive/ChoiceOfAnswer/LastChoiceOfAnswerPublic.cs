@@ -29,7 +29,17 @@ public class LastChoiceOfAnswerPublic : LastInteractivePublicBase
     }
     public bool[] Answers { get; set; }
     public bool[]? SuccessAnswers { get; set; }
-    
-    private bool[] ValidateChoiceOfAnswer(bool[] request, bool[] solve) =>
-        request.Zip(solve, (reply, answer) => reply == answer).ToArray();
+
+    private bool[] ValidateChoiceOfAnswer(bool[] request, bool[] solution)
+    {
+        for (int i = 0; i < solution.Length; i++)
+        {
+            if (request.Length > i)
+                solution[i] = solution[i] == request[i];
+            else
+                solution[i] = solution[i] == false;
+        }
+
+        return solution;
+    }
 }

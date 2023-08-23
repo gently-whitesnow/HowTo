@@ -58,6 +58,14 @@ export const CourseHeaderWrapper = styled.div`
   display: flex;
 `;
 
+export const Title = styled.div`
+  width: 100%;
+  font-size: 36px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: ${(props) => props.color};
+`;
+
 export const AuthorsWrapper = styled.div`
   opacity: 0.6;
   color: ${(props) => props.color};

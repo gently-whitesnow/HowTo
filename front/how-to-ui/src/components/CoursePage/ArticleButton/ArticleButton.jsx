@@ -14,6 +14,7 @@ import ErrorLineHandler from "../../common/ErrorLineHandler/ErrorLineHandler";
 import FileUploader from "../FileUploader/FileUploader";
 import { useEffect } from "react";
 import EditWidget from "../../common/EditWidget/EditWidget";
+import EntityTag from "../../common/EntityTag/EntityTag";
 
 const ArticleButton = (props) => {
   const fileInputRef = useRef(null);
@@ -84,7 +85,7 @@ const ArticleButton = (props) => {
               placeholder={"Введите название страницы"}
             />
           ) : (
-            <ArticleTitle>{title}</ArticleTitle>
+            <ArticleTitle>{title}<EntityTag status={props.article?.status} /></ArticleTitle>
           )}
 
           <ArticleToolsWrapper>

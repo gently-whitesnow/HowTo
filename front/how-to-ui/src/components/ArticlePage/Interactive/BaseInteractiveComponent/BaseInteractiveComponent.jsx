@@ -26,14 +26,18 @@ const BaseInteractiveComponent = (props) => {
   const [label, setLabel] = useState();
   const [buttonLabel, setButtonLabel] = useState();
   const [error, setError] = useState();
-  const [isEditing, setIsEditing] = useState();
+  const [isEditing, setIsEditing] = useState(props.interactive.isInteractiveEditing ?? false);
   const [isChanged, setIsChanged] = useState();
   const [description, setDescription] = useState(props.interactive.description);
 
   const { interactiveStore, stateStore } = useStore();
   const { isLoading } = stateStore;
-  const { upsertInteractiveReply, upsertInteractive, setNewInteractive, deleteInteractive } =
-    interactiveStore;
+  const {
+    upsertInteractiveReply,
+    upsertInteractive,
+    setNewInteractive,
+    deleteInteractive,
+  } = interactiveStore;
 
   const getInteractiveComponent = (interactive) => {
     if (interactive.interactiveType === InteractiveType.CheckList) {
@@ -126,12 +130,16 @@ const BaseInteractiveComponent = (props) => {
       return;
     }
 
-    deleteInteractive(props.interactive.interactiveType, props.interactive.id, (error) => {
-      if (error) {
-        setError(error);
-        return;
+    deleteInteractive(
+      props.interactive.interactiveType,
+      props.interactive.id,
+      (error) => {
+        if (error) {
+          setError(error);
+          return;
+        }
       }
-    });
+    );
   };
 
   const onSaveReplyClickHandler = () => {

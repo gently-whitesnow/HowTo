@@ -20,6 +20,8 @@ export const BoolArrayChanged = (initialArray, dynamicArray) => {
 };
 
 export const CopyArray = (fromArray, toArray) => {
+  if(!fromArray) return fromArray;
+
   for (let i = 0; i < fromArray.length; i++) {
     if (toArray.length <= i) toArray.push(fromArray[i]);
     else toArray[i] = fromArray[i];
