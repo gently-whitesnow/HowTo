@@ -108,10 +108,16 @@ export class Api {
 
   // auth
   // http://localhost:3000/auth?userId=69550bf7-e7e1-4650-801d-e9159530decb&userName=testSanya&role=1
-  getAuth = (userId, userName, userRole) =>
+  getFakeAuth = (userId, userName, userRole) =>
     this.clientWrapper(
       "get",
       `api/fakeauth?userId=${userId}&userName=${userName}&userRole=${userRole}`
+    );
+
+  getAuth = () =>
+    this.clientWrapper(
+      "get",
+      `api/auth`
     );
 
   // interactive
@@ -146,6 +152,25 @@ export class Api {
     this.clientWrapper(
       "delete",
       `api/interactive/${interactiveType}/${interactiveId}`
+    );
+
+  changeArticleStatus = (courseId, articleId, status) =>
+    this.clientWrapper(
+      "put",
+      `api/articles`, {
+        status: status,
+        courseId: courseId,
+        articleId: articleId,
+      }
+    );
+
+  changeCourseStatus = (courseId, status) =>
+    this.clientWrapper(
+      "put",
+      `api/courses`, {
+        status: status,
+        courseId: courseId
+      }
     );
 }
 const api = new Api();

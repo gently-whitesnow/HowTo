@@ -13,7 +13,7 @@ const CourseHolder = (props) => {
   const newArticleRef = useRef();
 
   const { courseStore, stateStore } = useStore();
-  const { isLoading } = stateStore;
+  const { isLoading, authData } = stateStore;
   const { articles, upsertArticle, newArticle, deleteArticle, setNewArticle } =
     courseStore;
 
@@ -27,6 +27,7 @@ const CourseHolder = (props) => {
         {articles?.map((article) => {
           return (
             <ArticleButton
+              userRole={authData.userRole}
               color={props.color}
               article={article}
               upsertArticle={upsertArticle}

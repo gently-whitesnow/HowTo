@@ -2,11 +2,11 @@ import { useEffect } from "react";
 import { useStore } from "../../store";
 import { AuthPageWrapper } from "./AuthPage.styles";
 import { observer } from "mobx-react-lite";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const AuthPage = () => {
   const { stateStore } = useStore();
-  const { getAuth } = stateStore;
+  const { getFakeAuth } = stateStore;
 
   const { search } = useLocation();
 
@@ -16,7 +16,7 @@ const AuthPage = () => {
     const userId = urlParams.get("userId");
     const userName = urlParams.get("userName");
     const userRole = urlParams.get("userRole");
-    getAuth(userId, userName, userRole);
+    getFakeAuth(userId, userName, userRole);
   }, []);
 
   return <AuthPageWrapper>Авторизация</AuthPageWrapper>;

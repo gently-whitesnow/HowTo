@@ -7,7 +7,8 @@ public class AdminRequiredAttribute: ActionFilterAttribute
 {
     public override void OnActionExecuting(ActionExecutingContext actionContext)
     {
-        if (actionContext.HttpContext.GetUser().UserRole == UserRole.Admin)
+        var user = actionContext.HttpContext.GetUser();
+        if (user.UserRole == UserRole.Admin)
             return;
 
         actionContext.Result = new UnauthorizedResult();

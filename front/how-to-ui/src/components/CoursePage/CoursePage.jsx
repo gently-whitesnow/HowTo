@@ -23,12 +23,14 @@ import Textarea from "../common/Textarea/Textarea";
 import ImageButton from "./ImageButton/ImageButton";
 import { IconButtonsWrapper } from "../common/EditWidget/EditWidget.styles";
 import EntityTag from "../common/EntityTag/EntityTag";
+import ThumbUpIcon from "../common/ThumbUpIcon/ThumbUpIcon";
+import { EntityStatus } from "../../entities/entityStatus";
 
 const CoursePage = () => {
   const imageInputRef = useRef(null);
   const { colorStore, courseStore, stateStore } = useStore();
   const { currentColorTheme } = colorStore;
-  const { isLoading } = stateStore;
+  const { isLoading, authData } = stateStore;
   const {
     getCourse,
     isCourseEditing,
@@ -101,7 +103,7 @@ const CoursePage = () => {
       }
     });
   };
-
+  
   return (
     <CoursePageWrapper>
       <CourseHeader>
@@ -137,6 +139,9 @@ const CoursePage = () => {
                     <Title color={currentColorTheme}>
                       {title}
                       <EntityTag status={status} />
+                      {status === EntityStatus.Moderation && authData.userRole === 1 ? (
+                        <ThumbUpIcon courseId={id} />
+                      ) : null}
                     </Title>
                   )}
 

@@ -29,9 +29,9 @@ class StateStore {
     this.isNotFound = value;
   };
 
-  getAuth = (userId, userName, userRole) => {
+  getFakeAuth = (userId, userName, userRole) => {
     api
-      .getAuth(userId, userName, userRole)
+      .getFakeAuth(userId, userName, userRole)
       .then(({ data }) => {
         this.setIsLoading(false);
         this.authData = data;
@@ -41,6 +41,20 @@ class StateStore {
       .catch((err) => {
         this.setIsLoading(false);
 
+        console.error(err);
+      });
+  };
+
+  getAuth = () => {
+    api
+      .getAuth()
+      .then(({ data }) => {
+        this.setIsLoading(false);
+        console.log(data)
+        this.authData = data;
+      })
+      .catch((err) => {
+        this.setIsLoading(false);
         console.error(err);
       });
   };

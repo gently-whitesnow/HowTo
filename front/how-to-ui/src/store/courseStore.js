@@ -231,9 +231,49 @@ class CourseStore {
       });
   };
 
+  changeArticleStatus = (courseId, articleId, status) => {
+    this.rootStore.stateStore.setIsLoading(true);
+    api
+      .changeArticleStatus(courseId, articleId,status)
+      .then(({ data }) => {
+        this.rootStore.stateStore.setIsLoading(false);
+        this.articles.forEach((a) => {
+          if (a.id === articleId) {
+            a.status = data.status;
+            return;
+          }
+        });
+      })
+      .catch((err) => {
+        this.rootStore.stateStore.setIsLoading(false);
+        console.error(err);
+        if (err.response?.status === 401) {
+          this.rootStore.stateStore.setIsAuthorized(false);
+        }
+      });
+  };
+
+  changeCourseStatus = (courseId, status) => {
+    this.rootStore.stateStore.setIsLoading(true);
+    api
+      .changeCourseStatus(courseId, status)
+      .then(({ data }) => {
+        this.rootStore.stateStore.setIsLoading(false);
+        this.status = data.status;
+      })
+      .catch((err) => {
+        this.rootStore.stateStore.setIsLoading(false);
+        console.error(err);
+        if (err.response?.status === 401) {
+          this.rootStore.stateStore.setIsAuthorized(false);
+        }
+      });
+  };
+
   clearStore() {
     this.id = undefined;
     this.title = "";
+    this.status = 0;
     this.description = "";
     this.createdAt = "";
     this.updatedAt = "";

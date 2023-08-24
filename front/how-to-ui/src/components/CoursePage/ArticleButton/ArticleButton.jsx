@@ -15,6 +15,8 @@ import FileUploader from "../FileUploader/FileUploader";
 import { useEffect } from "react";
 import EditWidget from "../../common/EditWidget/EditWidget";
 import EntityTag from "../../common/EntityTag/EntityTag";
+import ThumbUpIcon from "../../common/ThumbUpIcon/ThumbUpIcon";
+import { EntityStatus } from "../../../entities/entityStatus";
 
 const ArticleButton = (props) => {
   const fileInputRef = useRef(null);
@@ -85,7 +87,16 @@ const ArticleButton = (props) => {
               placeholder={"Введите название страницы"}
             />
           ) : (
-            <ArticleTitle>{title}<EntityTag status={props.article?.status} /></ArticleTitle>
+            <ArticleTitle>
+              {title}
+              <EntityTag status={props.article?.status} />{" "}
+              {props.article?.status === EntityStatus.Moderation && props.userRole == 1 ? (
+                <ThumbUpIcon
+                  courseId={props.article.courseId}
+                  articleId={props.article.id}
+                />
+              ) : null}
+            </ArticleTitle>
           )}
 
           <ArticleToolsWrapper>
@@ -99,12 +110,14 @@ const ArticleButton = (props) => {
             {isArticleEditing ? (
               <FileUploader color={props.color} fileInputRef={fileInputRef} />
             ) : null}
-            <EditWidget onEditClickHandler={onEditClickHandler}
-            onSaveClickHandler={onSaveClickHandler}
-            onDeleteClickHandler={onDeleteClickHandler}
-            color={props.color}
-            isLoading={props.isLoading}
-            isEditing={isArticleEditing}/>
+            <EditWidget
+              onEditClickHandler={onEditClickHandler}
+              onSaveClickHandler={onSaveClickHandler}
+              onDeleteClickHandler={onDeleteClickHandler}
+              color={props.color}
+              isLoading={props.isLoading}
+              isEditing={isArticleEditing}
+            />
           </>
         ) : null}
       </ArticleButtonWrapper>

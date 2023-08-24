@@ -34,10 +34,10 @@ public class CourseController : Controller
     /// Обновление статуса курса
     /// </summary>
     [HttpPut]
-    [Route("api/course")]
+    [Route("api/courses")]
     [ValidateModelState]
     [AdminRequired]
-    public Task<IActionResult> StatusUpdateArticleAsync([FromForm] UpdateStatusCourseRequest request)
+    public Task<IActionResult> StatusUpdateCourseAsync([FromBody] UpdateStatusCourseRequest request)
     {
         return _courseManager.UpdateStatusCourseAsync(request).AsActionResultAsync();
     }

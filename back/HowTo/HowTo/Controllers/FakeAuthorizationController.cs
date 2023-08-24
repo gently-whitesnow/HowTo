@@ -28,4 +28,12 @@ public class FakeAuthorizationController : Controller
         
         return Ok(new User(userId, userName, role));
     }
+    
+    [HttpGet]
+    [Route("api/auth")]
+    [FakeAuthorizationRequired]
+    public IActionResult GetAuthAsync()
+    {
+        return Ok(HttpContext.GetUser());
+    }
 }

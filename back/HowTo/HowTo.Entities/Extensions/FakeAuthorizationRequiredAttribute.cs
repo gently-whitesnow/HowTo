@@ -16,7 +16,7 @@ public class FakeAuthorizationRequiredAttribute : ActionFilterAttribute
             if (data.Length == 3 && !string.IsNullOrEmpty(data[0]) && !string.IsNullOrEmpty(data[1]) &&
                 Guid.TryParse(data[1], out var id))
             {
-                Enum.TryParse(data[1], out UserRole role);
+                Enum.TryParse(data[2], out UserRole role);
                 var user = new User(id, data[0], role);
 
                 actionContext.HttpContext.User = new GenericPrincipal(new UserIdentity(user), Array.Empty<string>());

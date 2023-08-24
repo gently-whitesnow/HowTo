@@ -31,7 +31,8 @@ const Header = () => {
   } = interactiveStore;
   const { article } = articleStore;
   const { addNewArticle, id } = courseStore;
-  const { isAuthorized, isNotFound, setIsNotFound, isLoading } = stateStore;
+  const { isAuthorized, isNotFound, setIsNotFound, isLoading, getAuth } =
+    stateStore;
 
   const navigate = useNavigate();
   const onClickHandler = (path) => {
@@ -40,6 +41,10 @@ const Header = () => {
 
   const location = useLocation();
   let path = location.pathname;
+
+  useEffect(() => {
+    getAuth();
+  }, []);
 
   useEffect(() => {
     if (!isAuthorized) {

@@ -37,7 +37,7 @@ public class ArticleController: Controller
     [Route("api/articles")]
     [ValidateModelState]
     [AdminRequired]
-    public Task<IActionResult> StatusUpdateArticleAsync([FromForm] UpdateStatusArticleRequest request)
+    public Task<IActionResult> StatusUpdateArticleAsync([FromBody] UpdateStatusArticleRequest request)
     {
         return _articleManager.UpdateStatusArticleAsync(request).AsActionResultAsync();
     }
