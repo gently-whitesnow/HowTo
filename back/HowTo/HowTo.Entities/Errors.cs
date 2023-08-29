@@ -24,4 +24,8 @@ public static class Errors
     public static readonly Func<int, OperationResult> InteractiveNotFound = (interactiveId) =>
         new(ActionStatus.BadRequest,
             $"interactive with id: [{interactiveId}] not found", "interactive_not_found");
+    
+    public static readonly OperationResult PermissionDenied = 
+        new(ActionStatus.Forbidden,
+            "cannot access for this user", "permission_denied");
 }

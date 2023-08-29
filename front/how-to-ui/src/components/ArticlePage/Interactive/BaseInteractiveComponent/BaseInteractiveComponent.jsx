@@ -108,6 +108,7 @@ const BaseInteractiveComponent = (props) => {
   const onEditClickHandler = () => {
     setIsEditing(!isEditing);
   };
+  
   const onSaveClickHandler = () => {
     let request = componentRef.current.getInteractiveData();
     request.interactiveId = props.interactive.id;

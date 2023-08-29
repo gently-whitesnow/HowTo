@@ -20,7 +20,7 @@ const WritingOfAnswerComponent = forwardRef(function WritingOfAnswerComponent(
 
   useEffect(() => {
     setUserSuccess(props.interactive.userSuccess);
-  }, [props.interactive.userSuccess]);
+  }, [props.interactive]);
 
   useImperativeHandle(
     ref,
@@ -41,11 +41,17 @@ const WritingOfAnswerComponent = forwardRef(function WritingOfAnswerComponent(
         setInitialUserAnswer(userAnswer);
       };
 
+      const saveCallback = () =>{
+        setUserAnswer("");
+        setInitialUserAnswer("");
+        setUserSuccess(undefined);
+      }
+
       return {
         getInteractiveReplyData,
         getInteractiveData,
         saveReplyCallback,
-        saveCallback() {},
+        saveCallback,
       };
     },
     [userAnswer, answer]

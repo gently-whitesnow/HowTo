@@ -21,11 +21,13 @@ const ProgramWritingComponent = forwardRef(function ProgramWritingComponent(
   );
 
   const [code, setCode] = useState(props.interactive.code ?? "");
+  const [output, setOutput] = useState(props.interactive.output ?? "");
   const [userSuccess, setUserSuccess] = useState(props.interactive.userSuccess);
 
   useEffect(() => {
     setUserSuccess(props.interactive.userSuccess);
-  }, [props.interactive.userSuccess]);
+    setOutput(props.interactive.output);
+  }, [props.interactive]);
 
   useImperativeHandle(
     ref,
@@ -46,11 +48,18 @@ const ProgramWritingComponent = forwardRef(function ProgramWritingComponent(
         setInitialUserCode(userCode);
       };
 
+      const saveCallback = () =>{
+        setUserCode(code);
+        setInitialUserCode(code);
+        setUserSuccess(undefined);
+        setOutput("");
+      }
+
       return {
         getInteractiveReplyData,
         getInteractiveData,
         saveReplyCallback,
-        saveCallback() {},
+        saveCallback,
       };
     },
     [userCode, code]
@@ -99,7 +108,7 @@ const ProgramWritingComponent = forwardRef(function ProgramWritingComponent(
           />
           <Textarea
             className="output-textarea"
-            value={props.interactive.output ?? ""}
+            value={output ?? ""}
             disabled={true}
             height={"40px"}
             fontsize={"24px"}

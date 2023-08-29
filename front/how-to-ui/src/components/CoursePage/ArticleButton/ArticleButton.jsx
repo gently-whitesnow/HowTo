@@ -17,6 +17,7 @@ import EditWidget from "../../common/EditWidget/EditWidget";
 import EntityTag from "../../common/EntityTag/EntityTag";
 import ThumbUpIcon from "../../common/ThumbUpIcon/ThumbUpIcon";
 import { EntityStatus } from "../../../entities/entityStatus";
+import { UserRole } from "../../../entities/userRole";
 
 const ArticleButton = (props) => {
   const fileInputRef = useRef(null);
@@ -90,7 +91,7 @@ const ArticleButton = (props) => {
             <ArticleTitle>
               {title}
               <EntityTag status={props.article?.status} />{" "}
-              {props.article?.status === EntityStatus.Moderation && props.userRole == 1 ? (
+              {props.article?.status === EntityStatus.Moderation && props.userRole === UserRole.Admin ? (
                 <ThumbUpIcon
                   courseId={props.article.courseId}
                   articleId={props.article.id}
@@ -105,7 +106,7 @@ const ArticleButton = (props) => {
             ) : null}
           </ArticleToolsWrapper>
         </ArticleButtonContent>
-        {props.article?.isAuthor ? (
+        {props.article?.isAuthor || props.userRole === UserRole.Admin ? (
           <>
             {isArticleEditing ? (
               <FileUploader color={props.color} fileInputRef={fileInputRef} />

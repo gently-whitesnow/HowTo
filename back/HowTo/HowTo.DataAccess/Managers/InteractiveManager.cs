@@ -365,6 +365,7 @@ public class InteractiveManager
              if(programWriting == null)
                  continue;
              programWriting.UserCode = lastReply.Code;
+             programWriting.Output = lastReply.Output;
              programWriting.UserSuccess = lastReply.Success;
          }
          

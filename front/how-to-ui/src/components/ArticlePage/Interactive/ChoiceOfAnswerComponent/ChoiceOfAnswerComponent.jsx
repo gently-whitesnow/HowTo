@@ -17,29 +17,28 @@ const ChoiceOfAnswerComponent = forwardRef(function ChoiceOfAnswerComponent(
   props,
   ref
 ) {
-  const [userAnswers, setUserAnswers] = useState(
-    props.interactive.userAnswers ?? []
-  );
-  const [initialUserAnswers, setInitialUserAnswers] = useState(
-    props.interactive.userAnswers?.slice() ?? []
-  );
+  const [userAnswers, setUserAnswers] = useState([
+    ...props.interactive.userAnswers,
+  ]);
+  const [initialUserAnswers, setInitialUserAnswers] = useState([
+    ...props.interactive.userAnswers,
+  ]);
 
-  const [userSuccessAnswers, setUserSuccessAnswers] = useState(
-    props.interactive.userSuccessAnswers ?? []
-  );
+  const [userSuccessAnswers, setUserSuccessAnswers] = useState([
+    ...props.interactive.userSuccessAnswers,
+  ]);
 
-  const [questions, setQuestions] = useState(props.interactive.questions ?? []);
+  const [questions, setQuestions] = useState([...props.interactive.questions]);
   const [newQuestions, setNewQuestions] = useState([]);
-  const [answers, setAnswers] = useState(props.interactive.answers ?? []);
+  const [answers, setAnswers] = useState([...props.interactive.answers]);
   const [newAnswers, setNewAnswers] = useState([]);
 
   const [lineComponents, setLineComponents] = useState();
   const [newLineComponent, setNewLineComponent] = useState();
 
   useEffect(() => {
-    setUserSuccessAnswers(
-      CopyArray(props.interactive.userSuccessAnswers, userSuccessAnswers)
-    );
+    // TODO CopyArray костыль, от которого не могу отказаться
+    setUserSuccessAnswers(CopyArray([...props.interactive.userSuccessAnswers], userSuccessAnswers));
     setLineComponents(getLineComponents());
     setNewLineComponent(getNewLineComponents());
   }, [props.isEditing, props.interactive.userSuccessAnswers]);
@@ -47,63 +46,71 @@ const ChoiceOfAnswerComponent = forwardRef(function ChoiceOfAnswerComponent(
   useImperativeHandle(
     ref,
     () => {
+      const getInteractiveReplyData = () => {
+        return {
+          upsertReplyChoiceOfAnswer: {
+            answers: NullToFalse(userAnswers),
+          },
+        };
+      };
+      const getInteractiveData = () => {
+        let processedData = getProcessedData();
+        return {
+          upsertChoiceOfAnswer: {
+            questions: processedData.questionsList,
+            answers: processedData.answersList,
+          },
+        };
+      };
+      const saveReplyCallback = () => {
+        setInitialUserAnswers([...userAnswers]);
+      };
+      const saveCallback = () => {
+        let processedData = getProcessedData();
+        setQuestions(processedData.questionsList);
+        setAnswers(processedData.answersList);
+        // TODO Если смотреть через консоль то методы не отрабатывают должным образом
+        setUserSuccessAnswers([]);
+        setNewQuestions([]);
+        setNewAnswers([]);
+        setUserAnswers([]);
+      };
       return {
-        getInteractiveReplyData() {
-          return {
-            upsertReplyChoiceOfAnswer: {
-              answers: NullToFalse(userAnswers),
-            },
-          };
-        },
-        getInteractiveData() {
-          let processedQuestions = getProcessedQuestions();
-          return {
-            upsertChoiceOfAnswer: {
-              questions: processedQuestions,
-              answers: getProcessedAnswers(processedQuestions),
-            },
-          };
-        },
-        saveReplyCallback() {
-          setInitialUserAnswers(CopyArray(userAnswers, initialUserAnswers));
-        },
-        saveCallback() {
-          let processedQuestions = getProcessedQuestions();
-          let processedAnswers = getProcessedAnswers(processedQuestions);
-          setQuestions(processedQuestions);
-          setAnswers(processedAnswers);
-          setUserSuccessAnswers(
-            CopyArray(processedAnswers, userSuccessAnswers)
-          );
-          setNewQuestions([]);
-          setNewAnswers([]);
-        },
+        getInteractiveReplyData,
+        getInteractiveData,
+        saveReplyCallback,
+        saveCallback,
       };
     },
-    []
+    [
+      userAnswers,
+      userSuccessAnswers,
+      questions,
+      newQuestions,
+      answers,
+      newAnswers,
+    ]
   );
 
-  const getProcessedQuestions = () => {
-    return questions
-      .filter((e) => e.trim().length !== 0)
-      .concat(newQuestions.filter((e) => e.trim().length !== 0));
-  };
+  const getProcessedData = () => {
+    let questionsList = [];
+    let answersList = [];
+    let allQuestions = questions.concat(newQuestions);
+    let allAnswers = answers.concat(newAnswers);
+    for (let index = 0; index < allQuestions.length; index++) {
+      if (allQuestions[index].trim().length === 0) continue;
 
-  // TODO плохой способ маппинга текста и ответов, подумать 
-  const getProcessedAnswers = (processedQuestions) => {
-    let ans = answers.concat(newAnswers);
-    while (ans.length < processedQuestions.length) ans.push(false);
-
-    if (ans.length > processedQuestions.length)
-      ans = ans.splice(0, processedQuestions.length);
-
-    return NullToFalse(ans);
+      questionsList.push(allQuestions[index]);
+      answersList.push(allAnswers[index] ?? false);
+    }
+    return { questionsList, answersList };
   };
 
   const onClickHandler = (index) => {
     if (props.isLoading) return;
     userAnswers[index] = !userAnswers[index];
     setUserAnswers(userAnswers);
+    console.log(userSuccessAnswers)
     setUserSuccessAnswers(AllUndefined(userSuccessAnswers));
     setLineComponents(getLineComponents());
     props.setIsChanged(BoolArrayChanged(initialUserAnswers, userAnswers));

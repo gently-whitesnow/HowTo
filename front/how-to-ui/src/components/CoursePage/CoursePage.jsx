@@ -25,6 +25,7 @@ import { IconButtonsWrapper } from "../common/EditWidget/EditWidget.styles";
 import EntityTag from "../common/EntityTag/EntityTag";
 import ThumbUpIcon from "../common/ThumbUpIcon/ThumbUpIcon";
 import { EntityStatus } from "../../entities/entityStatus";
+import { UserRole } from "../../entities/userRole";
 
 const CoursePage = () => {
   const imageInputRef = useRef(null);
@@ -139,13 +140,13 @@ const CoursePage = () => {
                     <Title color={currentColorTheme}>
                       {title}
                       <EntityTag status={status} />
-                      {status === EntityStatus.Moderation && authData.userRole === 1 ? (
+                      {status === EntityStatus.Moderation && authData.userRole === UserRole.Admin ? (
                         <ThumbUpIcon courseId={id} />
                       ) : null}
                     </Title>
                   )}
 
-                  {isAuthor ? (
+                  {isAuthor || authData.userRole === UserRole.Admin ? (
                     isCourseEditing ? (
                       <>
                         <IconButtonsWrapper>

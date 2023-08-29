@@ -32,34 +32,48 @@ const CheckListComponent = forwardRef(function CheckListComponent(props, ref) {
   useImperativeHandle(
     ref,
     () => {
+      const getInteractiveReplyData = () => ({
+        upsertReplyCheckList: {
+          clauses: userChecked,
+        },
+      });
+
+      const getInteractiveData = () => ({
+        upsertCheckList: {
+          clauses: getProcessedClauses(),
+        },
+      });
+
+      const saveReplyCallback = () => {
+        setInitialChecked(userChecked);
+      };
+
+      const saveCallback = () => {
+        setClauses(getProcessedClauses());
+        setNewClauses([]);
+      };
+
       return {
-        getInteractiveReplyData() {
-          return {
-            upsertReplyCheckList: {
-              clauses: userChecked,
-            },
-          };
-        },
-        getInteractiveData() {
-          return {
-            upsertCheckList: {
-              clauses: getProcessedClauses(),
-            },
-          };
-        },
-        saveReplyCallback() {
-          setInitialChecked(CopyArray(userChecked, initialChecked));
-        },
-        saveCallback() {
-          setClauses(getProcessedClauses());
-          setNewClauses([]);
-        },
+        getInteractiveReplyData,
+        getInteractiveData,
+        saveReplyCallback,
+        saveCallback,
       };
     },
-    []
+    [userChecked, clauses, newClauses]
   );
 
-  const getProcessedClauses = () => {return clauses.concat(newClauses.filter((e) => e.trim().length !== 0))}
+  const getProcessedClauses = () => {
+    console.log("clauses", clauses)
+    let processedClauses = clauses.filter((e) => e.trim().length !== 0);
+    console.log("processedClauses", processedClauses)
+    console.log("newClauses",newClauses)
+    let processedNewClauses = newClauses.filter((e) => e.trim().length !== 0);
+    console.log("processedNewClauses",processedNewClauses)
+    let ans = processedClauses.concat(processedNewClauses);
+    console.log(ans);
+    return ans;
+  };
 
   const onClickHandler = (index) => {
     if (props.isLoading) return;
