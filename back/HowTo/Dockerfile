@@ -1,8 +1,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
 WORKDIR /src
 
-COPY ./*.sln ./*/*.csproj ./
-RUN for file in $(ls *.csproj); do mkdir -p ./${file%.*}/ && mv $file ./${file%.*}/; done
+COPY ./*.sln ./*/*sproj ./
+RUN for file in $(ls *sproj); do mkdir -p ./${file%.*}/ && mv $file ./${file%.*}/; done
 
 RUN dotnet restore
 COPY ./ ./

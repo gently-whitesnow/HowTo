@@ -23,7 +23,7 @@ rm -rf build
 
 npm run build --prefix $SCRIPT_DIR/../../front/how-to-ui
 cp -R $SCRIPT_DIR/../../front/how-to-ui/build build
-zip -r ./build.zip ./build/*
+zip -r ./build.zip ./build
 scp ./build.zip admin@45.132.18.97:~/ 
 ssh admin@45.132.18.97 'unzip build.zip -d ./'
 

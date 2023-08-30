@@ -54,7 +54,6 @@ class InteractiveStore {
       this.interactive = this.interactive.concat(
         interactiveData.writingOfAnswer
       );
-    console.log("interactive data", this.interactive);
   };
 
   addInteractiveData = (interactiveData) => {
@@ -110,7 +109,6 @@ class InteractiveStore {
     api
       .upsertInteractive(upsertRequest)
       .then(({ data }) => {
-        console.log(data);
         this.rootStore.stateStore.setIsLoading(false);
 
         if (isNewInteractive) {

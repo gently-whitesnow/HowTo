@@ -50,7 +50,6 @@ class StateStore {
       .getAuth()
       .then(({ data }) => {
         this.setIsLoading(false);
-        console.log(data)
         this.authData = data;
       })
       .catch((err) => {

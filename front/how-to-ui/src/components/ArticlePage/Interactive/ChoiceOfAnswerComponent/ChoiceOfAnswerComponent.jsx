@@ -17,20 +17,20 @@ const ChoiceOfAnswerComponent = forwardRef(function ChoiceOfAnswerComponent(
   props,
   ref
 ) {
-  const [userAnswers, setUserAnswers] = useState([
-    ...props.interactive.userAnswers,
-  ]);
-  const [initialUserAnswers, setInitialUserAnswers] = useState([
-    ...props.interactive.userAnswers,
-  ]);
+  const [userAnswers, setUserAnswers] = useState(
+    props.interactive.userAnswers ?? [],
+  );
+  const [initialUserAnswers, setInitialUserAnswers] = useState(
+    props.interactive.userAnswers?.slice()  ?? [],
+  );
 
-  const [userSuccessAnswers, setUserSuccessAnswers] = useState([
-    ...props.interactive.userSuccessAnswers,
-  ]);
+  const [userSuccessAnswers, setUserSuccessAnswers] = useState(
+    props.interactive.userSuccessAnswers ?? [],
+  );
 
-  const [questions, setQuestions] = useState([...props.interactive.questions]);
+  const [questions, setQuestions] = useState(props.interactive.questions ?? []);
   const [newQuestions, setNewQuestions] = useState([]);
-  const [answers, setAnswers] = useState([...props.interactive.answers]);
+  const [answers, setAnswers] = useState(props.interactive.answers ?? []);
   const [newAnswers, setNewAnswers] = useState([]);
 
   const [lineComponents, setLineComponents] = useState();
@@ -38,7 +38,7 @@ const ChoiceOfAnswerComponent = forwardRef(function ChoiceOfAnswerComponent(
 
   useEffect(() => {
     // TODO CopyArray костыль, от которого не могу отказаться
-    setUserSuccessAnswers(CopyArray([...props.interactive.userSuccessAnswers], userSuccessAnswers));
+    setUserSuccessAnswers(CopyArray(props.interactive.userSuccessAnswers ?? [], userSuccessAnswers));
     setLineComponents(getLineComponents());
     setNewLineComponent(getNewLineComponents());
   }, [props.isEditing, props.interactive.userSuccessAnswers]);
@@ -110,7 +110,6 @@ const ChoiceOfAnswerComponent = forwardRef(function ChoiceOfAnswerComponent(
     if (props.isLoading) return;
     userAnswers[index] = !userAnswers[index];
     setUserAnswers(userAnswers);
-    console.log(userSuccessAnswers)
     setUserSuccessAnswers(AllUndefined(userSuccessAnswers));
     setLineComponents(getLineComponents());
     props.setIsChanged(BoolArrayChanged(initialUserAnswers, userAnswers));

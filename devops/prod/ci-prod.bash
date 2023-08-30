@@ -1,9 +1,9 @@
 #!/bin/bash
 
-git -C ./GUAP pull
+git -C ./HowTo pull
 
 # build api image
-docker build -t "howto-api" ./GUAP/AADSCourseProject/back/HowTo
+docker build -t "howto-api" ./HowTo/back/HowTo
 
 # Перекладываем статику в монтируемое nginx место
 sudo rm -rf /usr/share/nginx/html/*

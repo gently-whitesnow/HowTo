@@ -45,7 +45,7 @@ const CheckListComponent = forwardRef(function CheckListComponent(props, ref) {
       });
 
       const saveReplyCallback = () => {
-        setInitialChecked(userChecked);
+        setInitialChecked(CopyArray(userChecked, initialChecked));
       };
 
       const saveCallback = () => {
@@ -64,15 +64,9 @@ const CheckListComponent = forwardRef(function CheckListComponent(props, ref) {
   );
 
   const getProcessedClauses = () => {
-    console.log("clauses", clauses)
     let processedClauses = clauses.filter((e) => e.trim().length !== 0);
-    console.log("processedClauses", processedClauses)
-    console.log("newClauses",newClauses)
     let processedNewClauses = newClauses.filter((e) => e.trim().length !== 0);
-    console.log("processedNewClauses",processedNewClauses)
-    let ans = processedClauses.concat(processedNewClauses);
-    console.log(ans);
-    return ans;
+    return processedClauses.concat(processedNewClauses);;
   };
 
   const onClickHandler = (index) => {
