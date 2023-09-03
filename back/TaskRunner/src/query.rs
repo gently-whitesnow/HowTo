@@ -1,4 +1,6 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, str::FromStr};
+
+pub type QueryMap = HashMap<String, String>;
 
 fn query_key_value(param: &str) -> (&str, &str) {
     let mut iter = param.splitn(2, "=");
@@ -8,11 +10,11 @@ fn query_key_value(param: &str) -> (&str, &str) {
     )
 }
 
-pub fn parse_query(query: &str) -> HashMap<&str, &str> {
+pub fn parse_query(query: &str) -> QueryMap {
     let mut parsed = HashMap::new();
     for param in query.split("&") {
         let (key, value) = query_key_value(param).clone();
-        parsed.insert(key, value);
+        parsed.insert(String::from_str(key).unwrap_or_default(), String::from_str(value).unwrap_or_default());
     }
     parsed
 }

@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use hyper::{header, Body, Response, StatusCode};
 
 pub fn internal_server_error(msg: String) -> Response<Body> {
@@ -9,12 +11,12 @@ pub fn internal_server_error(msg: String) -> Response<Body> {
         .unwrap()
 }
 
-pub fn bad_request(msg: String) -> Response<Body> {
+pub fn bad_request(msg: &str) -> Response<Body> {
     Response::builder()
         .status(StatusCode::BAD_REQUEST)
         .header(header::ACCESS_CONTROL_ALLOW_ORIGIN, "*")
         .header(header::ACCESS_CONTROL_ALLOW_HEADERS, "*")
-        .body(msg.into())
+        .body(String::from_str(msg).unwrap().into())
         .unwrap()
 }
 
