@@ -106,7 +106,7 @@ export class Api {
     });
 
   // auth
-  // http://localhost:3000/auth?userId=69550bf7-e7e1-4650-801d-e9159530decb&userName=testSanya&role=1
+  // http://localhost:3000/auth?userId=69550bf7-e7e1-4650-801d-e9159530decb&userName=testSanya&userRole=1
   getFakeAuth = (userId, userName, userRole) =>
     this.clientWrapper(
       "get",

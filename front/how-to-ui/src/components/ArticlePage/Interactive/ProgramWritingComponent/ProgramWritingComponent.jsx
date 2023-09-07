@@ -1,5 +1,8 @@
 import { observer } from "mobx-react-lite";
-import { ProgramWritingComponentWrapper } from "./ProgramWritingComponent.styles";
+import {
+  ProgramWritingComponentWrapper,
+  SelectorWrapper,
+} from "./ProgramWritingComponent.styles";
 import Textarea from "../../../common/Textarea/Textarea";
 import theme from "../../../../theme";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
@@ -7,7 +10,9 @@ import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
-import 'prismjs/themes/prism.css';
+import "prismjs/themes/prism.css";
+import Selector from "../../../common/Selector/Selector";
+import { LanguageTemplate } from "./LanguageTemplate";
 
 const ProgramWritingComponent = forwardRef(function ProgramWritingComponent(
   props,
@@ -17,12 +22,17 @@ const ProgramWritingComponent = forwardRef(function ProgramWritingComponent(
     props.interactive.userCode ?? props.interactive.code ?? ""
   );
   const [initialUserCode, setInitialUserCode] = useState(
-    props.interactive.userCode ?? ""
+    props.interactive.userCode ??
+      LanguageTemplate[props.interactive.selectedLanguage?.id ?? 0]
   );
 
   const [code, setCode] = useState(props.interactive.code ?? "");
   const [output, setOutput] = useState(props.interactive.output ?? "");
   const [userSuccess, setUserSuccess] = useState(props.interactive.userSuccess);
+
+  const [language, setLanguage] = useState(
+    props.interactive.selectedLanguage ?? props.interactive.languages[0]
+  );
 
   useEffect(() => {
     setUserSuccess(props.interactive.userSuccess);
@@ -48,12 +58,12 @@ const ProgramWritingComponent = forwardRef(function ProgramWritingComponent(
         setInitialUserCode(userCode);
       };
 
-      const saveCallback = () =>{
+      const saveCallback = () => {
         setUserCode(code);
         setInitialUserCode(code);
         setUserSuccess(undefined);
         setOutput("");
-      }
+      };
 
       return {
         getInteractiveReplyData,
@@ -77,11 +87,27 @@ const ProgramWritingComponent = forwardRef(function ProgramWritingComponent(
     props.setIsChanged(ans != initialUserCode);
   };
 
+  const setSelectedLanguageHandler = (selectedLanguage) => {
+    setLanguage(selectedLanguage);
+    setUserCode(
+      props.interactive.selectedLanguage?.id === selectedLanguage.id
+        ? props.interactive.userCode
+        : LanguageTemplate[selectedLanguage.id ?? 0]
+    );
+  };
+
   return (
     <ProgramWritingComponentWrapper
       isEditing={props.isEditing}
       textareaColor={getTextareaStateColor()}
     >
+      <SelectorWrapper>
+        <Selector
+          elements={props.interactive.languages}
+          setSelectedElementHandler={setSelectedLanguageHandler}
+          selectedElement={language}
+        />
+      </SelectorWrapper>
       {props.isEditing ? (
         <Editor
           value={code}
@@ -91,6 +117,9 @@ const ProgramWritingComponent = forwardRef(function ProgramWritingComponent(
           style={{
             fontFamily: '"Fira code", "Fira Mono", monospace',
             fontSize: 12,
+            border: `1px solid ${theme.colors.blue}`,
+            zIndex: 1,
+            minHeight:"250px"
           }}
         />
       ) : (
@@ -103,7 +132,9 @@ const ProgramWritingComponent = forwardRef(function ProgramWritingComponent(
             style={{
               fontFamily: '"Fira code", "Fira Mono", monospace',
               fontSize: 12,
-              border: `1px solid ${theme.colors.blue}`
+              border: `1px solid ${theme.colors.blue}`,
+              zIndex: 1,
+              minHeight:"250px"
             }}
           />
           <Textarea

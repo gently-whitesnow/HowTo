@@ -13,3 +13,9 @@ export const ProgramWritingComponentWrapper = styled.div`
     border: 1px solid ${(props) => props.textareaColor};
   }
 `;
+
+export const SelectorWrapper = styled.div`
+  display: flex;
+  justify-content: end;
+  margin-bottom: 10px;
+`;

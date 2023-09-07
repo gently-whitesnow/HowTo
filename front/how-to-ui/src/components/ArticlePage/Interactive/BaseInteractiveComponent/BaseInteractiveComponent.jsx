@@ -19,6 +19,7 @@ import { useRef, useState } from "react";
 import EditWidget from "../../../common/EditWidget/EditWidget";
 import { useStore } from "../../../../store";
 import Textarea from "../../../common/Textarea/Textarea";
+import { LanguageType } from "../../../../entities/LanguageType";
 
 const BaseInteractiveComponent = (props) => {
   const componentRef = useRef(null);
@@ -26,7 +27,9 @@ const BaseInteractiveComponent = (props) => {
   const [label, setLabel] = useState();
   const [buttonLabel, setButtonLabel] = useState();
   const [error, setError] = useState();
-  const [isEditing, setIsEditing] = useState(props.interactive.isInteractiveEditing ?? false);
+  const [isEditing, setIsEditing] = useState(
+    props.interactive.isInteractiveEditing ?? false
+  );
   const [isChanged, setIsChanged] = useState();
   const [description, setDescription] = useState(props.interactive.description);
 
@@ -73,6 +76,17 @@ const BaseInteractiveComponent = (props) => {
     } else if (interactive.interactiveType === InteractiveType.ProgramWriting) {
       label ?? setLabel("Написание кода");
       buttonLabel ?? setButtonLabel("Запустить код");
+      interactive.languages = [
+        { name: "C# .net5", id: LanguageType.Cshapr },
+        { name: "Python", id: LanguageType.Python },
+        { name: "C++17 Clang++14", id: LanguageType.Cpp },
+      ];
+
+      interactive.selectedLanguage = {
+        name: "C# .net5",
+        id: LanguageType.Cshapr,
+      };
+
       return (
         <ProgramWritingComponent
           interactive={interactive}
@@ -108,7 +122,7 @@ const BaseInteractiveComponent = (props) => {
   const onEditClickHandler = () => {
     setIsEditing(!isEditing);
   };
-  
+
   const onSaveClickHandler = () => {
     let request = componentRef.current.getInteractiveData();
     request.interactiveId = props.interactive.id;
@@ -174,6 +188,7 @@ const BaseInteractiveComponent = (props) => {
                 height={"60px"}
                 fontsize={"24px"}
                 placeholder={"Введите описание интерактива"}
+                height="120px"
               />
             ) : (
               <InteractiveDescription>{description}</InteractiveDescription>
