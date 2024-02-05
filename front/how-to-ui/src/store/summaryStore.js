@@ -21,7 +21,7 @@ class SummaryStore {
     });
     data.lastCourse.image = data.courses?.find(
       (course) => course.id === data.lastCourse.id
-    ).image;
+    )?.image;
 
     this.summaryData = data;
     this.summaryStaticData = data;

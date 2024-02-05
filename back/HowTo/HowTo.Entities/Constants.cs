@@ -1,4 +1,4 @@
-namespace HowTo;
+namespace HowTo.Entities;
 
 public class Constants
 {

@@ -20,7 +20,6 @@ namespace HowTo.DataAccess.Managers;
 public class InteractiveManager
 {
     private readonly InteractiveRepository _interactiveRepository;
-    
     private readonly ArticleRepository _articleRepository;
 
     public InteractiveManager(

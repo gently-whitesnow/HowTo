@@ -25,17 +25,13 @@ public class ApplicationContext : DbContext
     public DbSet<UserUniqueInfoDto> UserUniqueInfoContext { get; set; }
     public DbSet<ContributorEntity> ContributorEntityContext { get; set; }
     public DbSet<ViewedEntity> UserViewEntityContext { get; set; }
-
     public DbSet<CheckListDto> CheckListContext { get; set; }
     public DbSet<ChoiceOfAnswerDto> ChoiceOfAnswerContext { get; set; }
     public DbSet<LogChoiceOfAnswerDto> LogChoiceOfAnswerContext { get; set; }
-
     public DbSet<ProgramWritingDto> ProgramWritingContext { get; set; }
     public DbSet<LogProgramWritingDto> LogProgramWritingContext { get; set; }
-
     public DbSet<WritingOfAnswerDto> WritingOfAnswerContext { get; set; }
     public DbSet<LogWritingOfAnswerDto> LogWritingOfAnswerContext { get; set; }
-
     public DbSet<LastCheckListDto> LastCheckListContext { get; set; }
     public DbSet<LastChoiceOfAnswerDto> LastChoiceOfAnswerContext { get; set; }
     public DbSet<LastProgramWritingDto> LastProgramWritingContext { get; set; }

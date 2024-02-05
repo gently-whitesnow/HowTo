@@ -4,8 +4,8 @@ import { camelizeKeys, decamelizeKeys , camelize} from "humps";
 export class Api {
   constructor() {
     this.client = axios.create();
-    this.client.defaults.baseURL = "https://nginx-proxy-server.ru/gw/";
-    // this.client.defaults.baseURL = "http://localhost:1999/";
+    // this.client.defaults.baseURL = "https://nginx-proxy-server.ru/gw/";
+    this.client.defaults.baseURL = "http://localhost:1999/";
     this.client.defaults.headers["Access-Control-Allow-Origin"] = "*";
     this.client.defaults.withCredentials = true;
     this.client.timeout = 3000;
@@ -107,6 +107,7 @@ export class Api {
 
   // auth
   // http://localhost:3000/auth?userId=69550bf7-e7e1-4650-801d-e9159530decb&userName=testSanya&userRole=1
+  // http://localhost:3000/auth?userId=69550bf7-e7e1-4650-801d-e9159531decb&userName=test&userRole=0
   getFakeAuth = (userId, userName, userRole) =>
     this.clientWrapper(
       "get",
